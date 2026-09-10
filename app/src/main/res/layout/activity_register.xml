@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F2F6F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UserAuth — Register"
+            android:textColor="#0F766E"
+            android:textSize="18sp"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText android:id="@+id/etFirstName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="First name" android:layout_marginBottom="8dp"/>
+        <EditText android:id="@+id/etLastName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Last name" android:layout_marginBottom="8dp"/>
+        <EditText android:id="@+id/etMiddleInitial" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Middle initial (optional)" android:layout_marginBottom="8dp"/>
+        <EditText android:id="@+id/etStudentId" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Student ID" android:layout_marginBottom="8dp"/>
+        <EditText android:id="@+id/etContactNumber" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Contact number" android:inputType="phone" android:layout_marginBottom="8dp"/>
+        <EditText android:id="@+id/etEmail" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Email address" android:inputType="textEmailAddress" android:layout_marginBottom="8dp"/>
+        <EditText android:id="@+id/etPassword" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Password" android:inputType="textPassword" android:layout_marginBottom="8dp"/>
+        <EditText android:id="@+id/etConfirmPassword" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Confirm password" android:inputType="textPassword" android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#D32F2F"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Back"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Register"
+                android:backgroundTint="#0F766E"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

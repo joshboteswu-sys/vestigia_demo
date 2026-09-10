@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F2F6F5"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Welcome back!"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#0F172A"
+        android:layout_marginTop="24dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Let's help something find its way home."
+        android:textColor="#64748B"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnReportItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Report a found item"
+        android:backgroundTint="#0F766E"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
+        android:id="@+id/btnBrowseItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Browse found items"
+        android:backgroundTint="#14B8A6"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="12dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E2E8F0"
+        android:layout_marginVertical="16dp"/>
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:backgroundTint="#EF4444"
+        android:textColor="#FFFFFF"/>
+
+</LinearLayout>
