@@ -1,7 +1,6 @@
 package com.vestigia.app.items;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -31,17 +30,15 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-// If launched with an "item_id" extra -> UPDATE mode (pre-fills the form).
-// If launched without it -> CREATE mode (blank form).
-public class AddEditItemActivity extends BaseProtectedActivity {
+public class AddEditLostItemActivity extends BaseProtectedActivity {
 
-    private EditText etItemName, etCategory, etLocation, etDateFound, etDescription;
+    private EditText etItemName, etCategory, etLocation, etDateLost, etDescription;
     private Button btnBack, btnSave, btnSelectPhoto;
     private ImageView ivPhoto;
     private TextView tvTitle, tvError;
     private ProgressBar progressBar;
 
-    private int editingItemId = -1; // -1 means "create new"
+    private int editingItemId = -1;
     private Uri selectedImageUri = null;
     private String existingImageUrl = null;
 
@@ -50,12 +47,12 @@ public class AddEditItemActivity extends BaseProtectedActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_edit_item);
+        setContentView(R.layout.activity_add_edit_lost_item);
 
         etItemName = findViewById(R.id.etItemName);
         etCategory = findViewById(R.id.etCategory);
         etLocation = findViewById(R.id.etLocation);
-        etDateFound = findViewById(R.id.etDateFound);
+        etDateLost = findViewById(R.id.etDateFound); // shared layout, reused ID
         etDescription = findViewById(R.id.etDescription);
         btnBack = findViewById(R.id.btnBack);
         btnSave = findViewById(R.id.btnSave);
@@ -75,20 +72,22 @@ public class AddEditItemActivity extends BaseProtectedActivity {
         btnSelectPhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         ivPhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
-        etDateFound.setOnClickListener(v -> showDatePicker());
+        etDateLost.setOnClickListener(v -> showDatePicker());
         btnBack.setOnClickListener(v -> finish());
+
+        tvTitle.setText("Report a lost item");
 
         editingItemId = getIntent().getIntExtra("item_id", -1);
         if (editingItemId != -1) {
-            tvTitle.setText("Edit found item");
+            tvTitle.setText("Edit lost report");
             prefillFromIntent();
         }
 
         btnSave.setOnClickListener(v -> {
             if (editingItemId == -1) {
-                saveItem(ApiConfig.ITEMS_CREATE, false);
+                saveItem(ApiConfig.LOST_CREATE, false);
             } else {
-                saveItem(ApiConfig.ITEMS_UPDATE, true);
+                saveItem(ApiConfig.LOST_UPDATE, true);
             }
         });
     }
@@ -96,8 +95,8 @@ public class AddEditItemActivity extends BaseProtectedActivity {
     private void prefillFromIntent() {
         etItemName.setText(getIntent().getStringExtra("item_name"));
         etCategory.setText(getIntent().getStringExtra("category"));
-        etLocation.setText(getIntent().getStringExtra("location"));
-        etDateFound.setText(getIntent().getStringExtra("date_found"));
+        etLocation.setText(getIntent().getStringExtra("last_seen_location"));
+        etDateLost.setText(getIntent().getStringExtra("date_lost"));
         etDescription.setText(getIntent().getStringExtra("description"));
         existingImageUrl = getIntent().getStringExtra("image_url");
         if (existingImageUrl != null) {
@@ -110,15 +109,15 @@ public class AddEditItemActivity extends BaseProtectedActivity {
         Calendar c = Calendar.getInstance();
         new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             String date = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
-            etDateFound.setText(date);
+            etDateLost.setText(date);
         }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     private boolean validate() {
         if (TextUtils.isEmpty(etItemName.getText()) ||
                 TextUtils.isEmpty(etLocation.getText()) ||
-                TextUtils.isEmpty(etDateFound.getText())) {
-            showError("Item name, location, and date found are required.");
+                TextUtils.isEmpty(etDateLost.getText())) {
+            showError("Item name, last seen location, and date lost are required.");
             return false;
         }
         showError(null);
@@ -133,12 +132,12 @@ public class AddEditItemActivity extends BaseProtectedActivity {
         if (isUpdate) {
             params.put("id", String.valueOf(editingItemId));
             params.put("status", getIntent().getStringExtra("status") != null
-                    ? getIntent().getStringExtra("status") : "Unclaimed");
+                    ? getIntent().getStringExtra("status") : "Missing");
         }
         params.put("item_name", etItemName.getText().toString().trim());
         params.put("category", etCategory.getText().toString().trim());
-        params.put("location", etLocation.getText().toString().trim());
-        params.put("date_found", etDateFound.getText().toString().trim());
+        params.put("last_seen_location", etLocation.getText().toString().trim());
+        params.put("date_lost", etDateLost.getText().toString().trim());
         params.put("description", etDescription.getText().toString().trim());
 
         VolleyMultipartRequest request = new VolleyMultipartRequest(
@@ -146,10 +145,10 @@ public class AddEditItemActivity extends BaseProtectedActivity {
                 response -> {
                     setLoading(false);
                     if (response.optBoolean("success", false)) {
-                        Toast.makeText(this, isUpdate ? "Item updated successfully." : "Item added successfully.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, isUpdate ? "Lost report updated." : "Lost report submitted.", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        showError(response.optString("message", "Could not save item."));
+                        showError(response.optString("message", "Could not save report."));
                     }
                 },
                 error -> {
@@ -170,7 +169,6 @@ public class AddEditItemActivity extends BaseProtectedActivity {
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    // Reads the picked image and compresses it a bit so uploads stay small/fast.
     private byte[] readBytesFromUri(Uri uri) throws Exception {
         InputStream inputStream = getContentResolver().openInputStream(uri);
         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);

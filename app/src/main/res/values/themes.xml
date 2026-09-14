@@ -1,9 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Vestigia" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Theme.Vestigia" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/teal_dark</item>
+        <item name="colorPrimaryVariant">@color/teal_dark</item>
+        <item name="colorOnPrimary">@color/surface</item>
+        <item name="colorSecondary">@color/teal_light</item>
+        <item name="colorSecondaryVariant">@color/teal_light</item>
+        <item name="colorOnSecondary">@color/surface</item>
+        <item name="android:statusBarColor">@color/teal_dark</item>
+        <item name="android:windowBackground">@color/background</item>
     </style>
-
-    <style name="Theme.Vestigia" parent="Base.Theme.Vestigia" />
 </resources>

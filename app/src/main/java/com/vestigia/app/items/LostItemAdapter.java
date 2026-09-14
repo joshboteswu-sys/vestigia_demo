@@ -12,15 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.vestigia.app.R;
-import com.vestigia.app.models.FoundItem;
+import com.vestigia.app.models.LostItem;
 
 import java.util.List;
 
-public class FoundItemAdapter extends RecyclerView.Adapter<FoundItemAdapter.ViewHolder> {
+public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHolder> {
 
-    private final List<FoundItem> items;
+    private final List<LostItem> items;
 
-    public FoundItemAdapter(List<FoundItem> items) {
+    public LostItemAdapter(List<LostItem> items) {
         this.items = items;
     }
 
@@ -28,15 +28,15 @@ public class FoundItemAdapter extends RecyclerView.Adapter<FoundItemAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_found_row, parent, false);
+                .inflate(R.layout.item_lost_row, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        FoundItem item = items.get(position);
+        LostItem item = items.get(position);
         holder.tvItemName.setText(item.getItemName());
-        holder.tvLocation.setText(item.getLocation() + " • " + item.getDateFound());
+        holder.tvLocation.setText(item.getLastSeenLocation() + " • " + item.getDateLost());
         holder.tvStatus.setText(item.getStatus());
 
         Glide.with(holder.itemView.getContext())
@@ -47,7 +47,7 @@ public class FoundItemAdapter extends RecyclerView.Adapter<FoundItemAdapter.View
                 .into(holder.ivThumb);
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), ItemDetailActivity.class);
+            Intent intent = new Intent(v.getContext(), LostItemDetailActivity.class);
             intent.putExtra("item_id", item.getId());
             v.getContext().startActivity(intent);
         });
@@ -58,7 +58,7 @@ public class FoundItemAdapter extends RecyclerView.Adapter<FoundItemAdapter.View
         return items.size();
     }
 
-    public void updateData(List<FoundItem> newItems) {
+    public void updateData(List<LostItem> newItems) {
         items.clear();
         items.addAll(newItems);
         notifyDataSetChanged();

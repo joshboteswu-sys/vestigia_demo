@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F2F6F5">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,24 +15,129 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="UserAuth — Register"
-            android:textColor="#0F766E"
-            android:textSize="18sp"
+            android:textColor="@color/teal_dark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="20dp"/>
+
+        <ImageView
+            android:id="@+id/ivPhoto"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="centerCrop"
+            android:background="@android:color/transparent"
+            android:contentDescription="Profile photo"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:layout_marginBottom="8dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSelectPhoto"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Add photo"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            app:cornerRadius="20dp"
+            app:strokeColor="@color/teal_dark"
+            android:textColor="@color/teal_dark"
             android:layout_marginBottom="16dp"/>
 
-        <EditText android:id="@+id/etFirstName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="First name" android:layout_marginBottom="8dp"/>
-        <EditText android:id="@+id/etLastName" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Last name" android:layout_marginBottom="8dp"/>
-        <EditText android:id="@+id/etMiddleInitial" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Middle initial (optional)" android:layout_marginBottom="8dp"/>
-        <EditText android:id="@+id/etStudentId" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Student ID" android:layout_marginBottom="8dp"/>
-        <EditText android:id="@+id/etContactNumber" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Contact number" android:inputType="phone" android:layout_marginBottom="8dp"/>
-        <EditText android:id="@+id/etEmail" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Email address" android:inputType="textEmailAddress" android:layout_marginBottom="8dp"/>
-        <EditText android:id="@+id/etPassword" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Password" android:inputType="textPassword" android:layout_marginBottom="8dp"/>
-        <EditText android:id="@+id/etConfirmPassword" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Confirm password" android:inputType="textPassword" android:layout_marginBottom="8dp"/>
+        <!-- Reusable pattern: TextInputLayout + TextInputEditText for every field -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="First name" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFirstName" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Last name" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etLastName" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Middle initial (optional)" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etMiddleInitial" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Student ID" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etStudentId" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Contact number" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etContactNumber" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:inputType="phone"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Email address" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Password" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/teal_dark" app:passwordToggleEnabled="true" android:layout_marginBottom="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Confirm password" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/teal_dark" app:passwordToggleEnabled="true" android:layout_marginBottom="8dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etConfirmPassword" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/tvError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#D32F2F"
+            android:textColor="@color/error_text"
+            android:textSize="13sp"
             android:visibility="gone"
             android:layout_marginBottom="8dp"/>
 
@@ -45,24 +151,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="24dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBack"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Back"
-                android:layout_marginEnd="8dp"/>
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1"
+                android:layout_marginEnd="8dp" android:text="Back" android:textAllCaps="false"
+                app:cornerRadius="14dp" app:strokeColor="@color/teal_dark" android:textColor="@color/teal_dark"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRegister"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Register"
-                android:backgroundTint="#0F766E"
-                android:textColor="#FFFFFF"/>
+                android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1"
+                android:text="Register" android:textAllCaps="false"
+                app:cornerRadius="14dp" app:backgroundTint="@color/teal_dark"/>
         </LinearLayout>
 
     </LinearLayout>

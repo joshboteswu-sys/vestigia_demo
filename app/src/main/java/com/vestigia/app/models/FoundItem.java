@@ -8,12 +8,12 @@ public class FoundItem {
     private String location;
     private String dateFound;
     private String status;
-    private String imagePath;
+    private String imageUrl;
     private String reportedByName;
 
     public FoundItem(int id, String itemName, String description, String category,
-                      String location, String dateFound, String status,
-                      String imagePath, String reportedByName) {
+                     String location, String dateFound, String status,
+                     String imageUrl, String reportedByName) {
         this.id = id;
         this.itemName = itemName;
         this.description = description;
@@ -21,7 +21,7 @@ public class FoundItem {
         this.location = location;
         this.dateFound = dateFound;
         this.status = status;
-        this.imagePath = imagePath;
+        this.imageUrl = imageUrl;
         this.reportedByName = reportedByName;
     }
 
@@ -32,6 +32,6 @@ public class FoundItem {
     public String getLocation() { return location; }
     public String getDateFound() { return dateFound; }
     public String getStatus() { return status; }
-    public String getImagePath() { return imagePath; }
+    public String getImageUrl() { return imageUrl; }
     public String getReportedByName() { return reportedByName; }
 }

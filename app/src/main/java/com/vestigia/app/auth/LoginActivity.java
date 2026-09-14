@@ -93,7 +93,8 @@ public class LoginActivity extends AppCompatActivity {
                                     user.getInt("id"),
                                     user.getString("first_name"),
                                     user.getString("last_name"),
-                                    user.getString("email")
+                                    user.getString("email"),
+                                    user.optBoolean("is_admin", false)
                             );
                             Toast.makeText(this, "Welcome back, " + user.getString("first_name") + "!", Toast.LENGTH_SHORT).show();
                             goToDashboard();

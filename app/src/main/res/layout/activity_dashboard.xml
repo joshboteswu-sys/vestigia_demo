@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F2F6F5"
+    android:background="@color/background"
     android:padding="24dp">
 
     <TextView
@@ -11,48 +12,103 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Welcome back!"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#0F172A"
-        android:layout_marginTop="24dp"/>
+        android:textColor="@color/text_primary"
+        android:layout_marginTop="32dp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Let's help something find its way home."
-        android:textColor="#64748B"
-        android:layout_marginBottom="24dp"/>
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="32dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnReportItem"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="54dp"
         android:text="Report a found item"
-        android:backgroundTint="#0F766E"
-        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/teal_dark"
         android:layout_marginBottom="12dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBrowseItems"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="54dp"
         android:text="Browse found items"
-        android:backgroundTint="#14B8A6"
-        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/teal_light"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnReportLost"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="Report a lost item"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/text_secondary"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBrowseLost"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="Browse lost reports"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/text_secondary"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAdminPanel"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="Admin panel — pending claims"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/teal_dark"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnProfile"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="My profile"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:strokeColor="@color/teal_dark"
+        android:textColor="@color/teal_dark"
         android:layout_marginBottom="12dp"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#E2E8F0"
-        android:layout_marginVertical="16dp"/>
+        android:background="@color/border"
+        android:layout_marginVertical="20dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="54dp"
         android:text="Logout"
-        android:backgroundTint="#EF4444"
-        android:textColor="#FFFFFF"/>
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/danger"/>
 
 </LinearLayout>

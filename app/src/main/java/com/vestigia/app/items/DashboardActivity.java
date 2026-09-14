@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.view.View;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.vestigia.app.R;
@@ -29,6 +29,13 @@ public class DashboardActivity extends BaseProtectedActivity {
         btnReportItem = findViewById(R.id.btnReportItem);
         btnBrowseItems = findViewById(R.id.btnBrowseItems);
         btnLogout = findViewById(R.id.btnLogout);
+        Button btnReportLost = findViewById(R.id.btnReportLost);
+        Button btnBrowseLost = findViewById(R.id.btnBrowseLost);
+        Button btnAdminPanel = findViewById(R.id.btnAdminPanel);
+        Button btnProfile = findViewById(R.id.btnProfile);
+
+        btnProfile.setOnClickListener(v ->
+                startActivity(new Intent(this, ProfileActivity.class)));
 
         // Display the logged-in user's name
         tvWelcome.setText("Welcome back, " + sessionManager.getFirstName() + "!");
@@ -39,7 +46,22 @@ public class DashboardActivity extends BaseProtectedActivity {
         btnBrowseItems.setOnClickListener(v ->
                 startActivity(new Intent(this, FoundItemsListActivity.class)));
 
+        btnReportLost.setOnClickListener(v ->
+                startActivity(new Intent(this, AddEditLostItemActivity.class)));
+
+        btnBrowseLost.setOnClickListener(v ->
+                startActivity(new Intent(this, LostItemsListActivity.class)));
         btnLogout.setOnClickListener(v -> logout());
+
+
+
+        if (sessionManager.isAdmin()) {
+            btnAdminPanel.setVisibility(View.VISIBLE);
+            btnAdminPanel.setOnClickListener(v ->
+                    startActivity(new Intent(this, AdminPendingClaimsActivity.class)));
+        } else {
+            btnAdminPanel.setVisibility(View.GONE);
+        }
     }
 
     private void logout() {

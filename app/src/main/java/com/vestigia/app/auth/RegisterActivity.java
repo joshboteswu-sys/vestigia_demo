@@ -1,33 +1,43 @@
 package com.vestigia.app.auth;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.Request;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 import com.vestigia.app.R;
 import com.vestigia.app.network.ApiConfig;
+import com.vestigia.app.network.VolleyMultipartRequest;
 import com.vestigia.app.network.VolleySingleton;
 
-import org.json.JSONObject;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etFirstName, etLastName, etMiddleInitial, etStudentId,
             etContactNumber, etEmail, etPassword, etConfirmPassword;
-    private Button btnRegister, btnBack;
+    private Button btnRegister, btnBack, btnSelectPhoto;
+    private ImageView ivPhoto;
     private TextView tvError;
     private ProgressBar progressBar;
+
+    private Uri selectedImageUri = null;
+    private ActivityResultLauncher<String> imagePickerLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +54,20 @@ public class RegisterActivity extends AppCompatActivity {
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnRegister = findViewById(R.id.btnRegister);
         btnBack = findViewById(R.id.btnBack);
+        btnSelectPhoto = findViewById(R.id.btnSelectPhoto);
+        ivPhoto = findViewById(R.id.ivPhoto);
         tvError = findViewById(R.id.tvError);
         progressBar = findViewById(R.id.progressBar);
+
+        imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                selectedImageUri = uri;
+                Glide.with(this).load(uri).circleCrop().into(ivPhoto);
+            }
+        });
+
+        btnSelectPhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        ivPhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
         btnBack.setOnClickListener(v -> finish());
         btnRegister.setOnClickListener(v -> attemptRegister());
@@ -86,26 +108,20 @@ public class RegisterActivity extends AppCompatActivity {
         showError(null);
         setLoading(true);
 
-        JSONObject body = new JSONObject();
-        try {
-            body.put("first_name", firstName);
-            body.put("last_name", lastName);
-            body.put("middle_initial", middleInitial);
-            body.put("student_id", studentId);
-            body.put("contact_number", contactNumber);
-            body.put("email", email);
-            body.put("password", password);
-        } catch (Exception e) {
-            setLoading(false);
-            showError("Unexpected error building request.");
-            return;
-        }
+        Map<String, String> params = new HashMap<>();
+        params.put("first_name", firstName);
+        params.put("last_name", lastName);
+        params.put("middle_initial", middleInitial);
+        params.put("student_id", studentId);
+        params.put("contact_number", contactNumber);
+        params.put("email", email);
+        params.put("password", password);
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ApiConfig.REGISTER, body,
+        VolleyMultipartRequest request = new VolleyMultipartRequest(
+                ApiConfig.REGISTER, null, params,
                 response -> {
                     setLoading(false);
-                    boolean success = response.optBoolean("success", false);
-                    if (success) {
+                    if (response.optBoolean("success", false)) {
                         Toast.makeText(this, "Account created! Please log in.", Toast.LENGTH_LONG).show();
                         finish(); // back to Login
                     } else {
@@ -114,21 +130,29 @@ public class RegisterActivity extends AppCompatActivity {
                 },
                 error -> {
                     setLoading(false);
-                    showError(parseServerMessage(error));
-                });
+                    showError("Could not reach the server. Check your connection.");
+                }
+        );
+
+        if (selectedImageUri != null) {
+            try {
+                byte[] bytes = readBytesFromUri(selectedImageUri);
+                request.setFile("photo", bytes, "photo.jpg", "image/jpeg");
+            } catch (Exception e) {
+                Toast.makeText(this, "Could not read selected photo, registering without it.", Toast.LENGTH_SHORT).show();
+            }
+        }
 
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    private String parseServerMessage(VolleyError error) {
-        try {
-            if (error.networkResponse != null && error.networkResponse.data != null) {
-                String body = new String(error.networkResponse.data);
-                JSONObject json = new JSONObject(body);
-                return json.optString("message", "Registration failed. Please try again.");
-            }
-        } catch (Exception ignored) { }
-        return "Could not reach the server. Check your connection.";
+    private byte[] readBytesFromUri(Uri uri) throws Exception {
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(inputStream);
+        if (inputStream != null) inputStream.close();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, baos);
+        return baos.toByteArray();
     }
 
     private void showError(String message) {

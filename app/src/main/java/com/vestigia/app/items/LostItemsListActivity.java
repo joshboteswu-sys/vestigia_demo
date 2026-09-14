@@ -18,7 +18,7 @@ import com.android.volley.Request;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vestigia.app.R;
 import com.vestigia.app.auth.BaseProtectedActivity;
-import com.vestigia.app.models.FoundItem;
+import com.vestigia.app.models.LostItem;
 import com.vestigia.app.network.ApiConfig;
 import com.vestigia.app.network.AuthJsonObjectRequest;
 import com.vestigia.app.network.VolleySingleton;
@@ -30,7 +30,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FoundItemsListActivity extends BaseProtectedActivity {
+public class LostItemsListActivity extends BaseProtectedActivity {
 
     private EditText etSearch;
     private Button btnFilterToday, btnFilterWeek, btnFilterOlder;
@@ -39,14 +39,14 @@ public class FoundItemsListActivity extends BaseProtectedActivity {
     private ProgressBar progressBar;
     private FloatingActionButton fabAdd;
 
-    private FoundItemAdapter adapter;
-    private final List<FoundItem> itemList = new ArrayList<>();
+    private LostItemAdapter adapter;
+    private final List<LostItem> itemList = new ArrayList<>();
     private String currentFilter = "all";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_found_items_list);
+        setContentView(R.layout.activity_lost_items_list);
 
         etSearch = findViewById(R.id.etSearch);
         btnFilterToday = findViewById(R.id.btnFilterToday);
@@ -57,7 +57,7 @@ public class FoundItemsListActivity extends BaseProtectedActivity {
         progressBar = findViewById(R.id.progressBar);
         fabAdd = findViewById(R.id.fabAdd);
 
-        adapter = new FoundItemAdapter(itemList);
+        adapter = new LostItemAdapter(itemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -72,7 +72,7 @@ public class FoundItemsListActivity extends BaseProtectedActivity {
         });
 
         fabAdd.setOnClickListener(v ->
-                startActivity(new Intent(this, AddEditItemActivity.class)));
+                startActivity(new Intent(this, AddEditLostItemActivity.class)));
     }
 
     @Override
@@ -88,7 +88,7 @@ public class FoundItemsListActivity extends BaseProtectedActivity {
         tvEmpty.setVisibility(View.GONE);
 
         String search = etSearch.getText().toString().trim();
-        String url = ApiConfig.ITEMS_LIST + "?filter=" + currentFilter;
+        String url = ApiConfig.LOST_LIST + "?filter=" + currentFilter;
         try {
             url += "&search=" + URLEncoder.encode(search, "UTF-8");
         } catch (Exception ignored) { }
@@ -99,19 +99,19 @@ public class FoundItemsListActivity extends BaseProtectedActivity {
                     progressBar.setVisibility(View.GONE);
                     try {
                         JSONArray arr = response.getJSONArray("items");
-                        List<FoundItem> results = new ArrayList<>();
+                        List<LostItem> results = new ArrayList<>();
                         for (int i = 0; i < arr.length(); i++) {
                             JSONObject o = arr.getJSONObject(i);
-                            results.add(new FoundItem(
+                            results.add(new LostItem(
                                     o.getInt("id"),
                                     o.getString("item_name"),
                                     o.optString("description", ""),
                                     o.optString("category", ""),
-                                    o.getString("location"),
-                                    o.getString("date_found"),
+                                    o.getString("last_seen_location"),
+                                    o.getString("date_lost"),
                                     o.getString("status"),
                                     o.isNull("image_url") ? null : o.optString("image_url", null),
-                                    o.optString("first_name", "") + " " + o.optString("last_name", "")
+                                    o.optInt("reported_by", -1)
                             ));
                         }
                         adapter.updateData(results);
@@ -122,7 +122,7 @@ public class FoundItemsListActivity extends BaseProtectedActivity {
                 },
                 error -> {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Could not load items. Check your connection.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Could not load reports. Check your connection.", Toast.LENGTH_SHORT).show();
                 }
         );
 

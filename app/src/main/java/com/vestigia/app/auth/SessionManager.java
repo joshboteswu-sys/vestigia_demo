@@ -11,11 +11,15 @@ public class SessionManager {
     private static final String KEY_LAST_NAME = "last_name";
     private static final String KEY_EMAIL = "email";
 
+    private static final String KEY_IS_ADMIN = "is_admin";
+
+
     private final SharedPreferences prefs;
 
     public SessionManager(Context context) {
         prefs = context.getApplicationContext()
                 .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+
     }
 
     public void saveSession(String token, int userId, String firstName, String lastName, String email) {
@@ -28,6 +32,24 @@ public class SessionManager {
         editor.apply();
     }
 
+    public void saveSession(String token, int userId, String firstName, String lastName, String email, boolean isAdmin) {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_TOKEN, token);
+        editor.putInt(KEY_USER_ID, userId);
+        editor.putString(KEY_FIRST_NAME, firstName);
+        editor.putString(KEY_LAST_NAME, lastName);
+        editor.putString(KEY_EMAIL, email);
+        editor.putBoolean(KEY_IS_ADMIN, isAdmin);
+        editor.apply();
+    }
+
+    public boolean isAdmin() {
+        return prefs.getBoolean(KEY_IS_ADMIN, false);
+    }
+
+    public boolean canModify(int reportedByUserId) {
+        return reportedByUserId == getUserId();
+    }
     public String getToken() {
         return prefs.getString(KEY_TOKEN, null);
     }
@@ -61,4 +83,6 @@ public class SessionManager {
     public void clearSession() {
         prefs.edit().clear().apply();
     }
+
+
 }

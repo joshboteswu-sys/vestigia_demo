@@ -19,11 +19,11 @@ import com.vestigia.app.network.VolleySingleton;
 
 import org.json.JSONObject;
 
-public class ItemDetailActivity extends BaseProtectedActivity {
+public class LostItemDetailActivity extends BaseProtectedActivity {
 
-    private TextView tvItemName, tvStatus, tvLocationDate, tvDescription;
+    private TextView tvItemName, tvStatus, tvLocationDate, tvDescription, tvNotYours;
     private ImageView ivPhoto;
-    private Button btnEdit, btnDelete, btnClaim;
+    private Button btnEdit, btnDelete;
     private android.widget.ProgressBar progressBar;
 
     private int itemId;
@@ -32,35 +32,34 @@ public class ItemDetailActivity extends BaseProtectedActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_detail);
+        setContentView(R.layout.activity_lost_item_detail);
 
         tvItemName = findViewById(R.id.tvItemName);
         tvStatus = findViewById(R.id.tvStatus);
         tvLocationDate = findViewById(R.id.tvLocationDate);
         tvDescription = findViewById(R.id.tvDescription);
+        tvNotYours = findViewById(R.id.tvNotYours);
         ivPhoto = findViewById(R.id.ivPhoto);
         btnEdit = findViewById(R.id.btnEdit);
         btnDelete = findViewById(R.id.btnDelete);
-        btnClaim = findViewById(R.id.btnClaim);
         progressBar = findViewById(R.id.progressBar);
 
         itemId = getIntent().getIntExtra("item_id", -1);
         if (itemId == -1) {
-            Toast.makeText(this, "Item not found.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Report not found.", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
         btnEdit.setOnClickListener(v -> goToEdit());
         btnDelete.setOnClickListener(v -> confirmDelete());
-        btnClaim.setOnClickListener(v -> goToClaim());
 
         loadItem();
     }
 
     private void loadItem() {
         progressBar.setVisibility(View.VISIBLE);
-        String url = ApiConfig.ITEMS_GET + "?id=" + itemId;
+        String url = ApiConfig.LOST_GET + "?id=" + itemId;
 
         AuthJsonObjectRequest request = new AuthJsonObjectRequest(
                 Request.Method.GET, url, null, sessionManager.getToken(),
@@ -70,27 +69,8 @@ public class ItemDetailActivity extends BaseProtectedActivity {
                         currentItem = response.getJSONObject("item");
                         tvItemName.setText(currentItem.getString("item_name"));
                         tvStatus.setText(currentItem.getString("status"));
-                        tvLocationDate.setText(currentItem.getString("location") + "  •  " + currentItem.getString("date_found"));
+                        tvLocationDate.setText(currentItem.getString("last_seen_location") + "  •  " + currentItem.getString("date_lost"));
                         tvDescription.setText(currentItem.optString("description", ""));
-
-                        // ---- Permission restriction: only the reporter can edit/delete ----
-                        int reportedBy = currentItem.optInt("reported_by", -1);
-                        boolean isOwner = sessionManager.canModify(reportedBy);
-                        btnEdit.setVisibility(isOwner ? View.VISIBLE : View.GONE);
-                        btnDelete.setVisibility(isOwner ? View.VISIBLE : View.GONE);
-
-                        // ---- Claim button logic ----
-                        // Show "Claim item" only if: item is Unclaimed, and the current
-                        // user did NOT report it themselves.
-                        String status = currentItem.optString("status", "");
-                        if (status.equals("Unclaimed") && !isOwner) {
-                            btnClaim.setVisibility(View.VISIBLE);
-                            btnClaim.setText("Claim item");
-                            btnClaim.setEnabled(true);
-                            checkExistingClaim();
-                        } else {
-                            btnClaim.setVisibility(View.GONE);
-                        }
 
                         String imageUrl = currentItem.isNull("image_url") ? null : currentItem.optString("image_url", null);
                         if (imageUrl != null) {
@@ -100,70 +80,44 @@ public class ItemDetailActivity extends BaseProtectedActivity {
                         } else {
                             ivPhoto.setImageResource(android.R.drawable.ic_menu_gallery);
                         }
+
+                        // ---- Permission restriction: only the reporter (or admin) can edit/delete ----
+                        int reportedBy = currentItem.optInt("reported_by", -1);
+                        boolean canModify = sessionManager.canModify(reportedBy);
+                        btnEdit.setVisibility(canModify ? View.VISIBLE : View.GONE);
+                        btnDelete.setVisibility(canModify ? View.VISIBLE : View.GONE);
+                        tvNotYours.setVisibility(canModify ? View.GONE : View.VISIBLE);
+
                     } catch (Exception e) {
-                        Toast.makeText(this, "Could not read item details.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Could not read report details.", Toast.LENGTH_SHORT).show();
                     }
                 },
                 error -> {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Could not load item.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Could not load report.", Toast.LENGTH_SHORT).show();
                 }
         );
 
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    // Checks if the current user already has a claim (pending/rejected) on this
-    // item, so we don't let them spam duplicate submissions.
-    private void checkExistingClaim() {
-        String url = ApiConfig.CLAIMS_STATUS + "?item_id=" + itemId;
-        AuthJsonObjectRequest request = new AuthJsonObjectRequest(
-                Request.Method.GET, url, null, sessionManager.getToken(),
-                response -> {
-                    JSONObject claim = response.optJSONObject("claim");
-                    if (claim != null) {
-                        String claimStatus = claim.optString("status", "");
-                        if (claimStatus.equals("Pending")) {
-                            btnClaim.setText("Claim pending review");
-                            btnClaim.setEnabled(false);
-                        } else if (claimStatus.equals("Rejected")) {
-                            btnClaim.setText("Claim item"); // allow resubmission
-                            btnClaim.setEnabled(true);
-                        }
-                    }
-                },
-                error -> { /* silently ignore — button just shows default state */ }
-        );
-        VolleySingleton.getInstance(this).addToRequestQueue(request);
-    }
-
     private void goToEdit() {
         if (currentItem == null) return;
-        Intent intent = new Intent(this, AddEditItemActivity.class);
+        Intent intent = new Intent(this, AddEditLostItemActivity.class);
         intent.putExtra("item_id", itemId);
         intent.putExtra("item_name", currentItem.optString("item_name"));
         intent.putExtra("category", currentItem.optString("category"));
-        intent.putExtra("location", currentItem.optString("location"));
-        intent.putExtra("date_found", currentItem.optString("date_found"));
+        intent.putExtra("last_seen_location", currentItem.optString("last_seen_location"));
+        intent.putExtra("date_lost", currentItem.optString("date_lost"));
         intent.putExtra("description", currentItem.optString("description"));
         intent.putExtra("status", currentItem.optString("status"));
         intent.putExtra("image_url", currentItem.isNull("image_url") ? null : currentItem.optString("image_url", null));
         startActivity(intent);
     }
 
-    private void goToClaim() {
-        if (currentItem == null) return;
-        Intent intent = new Intent(this, ClaimItemActivity.class);
-        intent.putExtra("item_id", itemId);
-        intent.putExtra("item_name", currentItem.optString("item_name"));
-        intent.putExtra("location", currentItem.optString("location"));
-        intent.putExtra("date_found", currentItem.optString("date_found"));
-        startActivity(intent);
-    }
-
     private void confirmDelete() {
         new AlertDialog.Builder(this)
-                .setTitle("Delete item")
+                .setTitle("Delete report")
                 .setMessage("Are you sure you want to delete \"" + tvItemName.getText() + "\"? This cannot be undone.")
                 .setPositiveButton("Delete", (dialog, which) -> deleteItem())
                 .setNegativeButton("Cancel", null)
@@ -179,11 +133,11 @@ public class ItemDetailActivity extends BaseProtectedActivity {
         } catch (Exception ignored) { }
 
         AuthJsonObjectRequest request = new AuthJsonObjectRequest(
-                Request.Method.POST, ApiConfig.ITEMS_DELETE, body, sessionManager.getToken(),
+                Request.Method.POST, ApiConfig.LOST_DELETE, body, sessionManager.getToken(),
                 response -> {
                     progressBar.setVisibility(View.GONE);
                     if (response.optBoolean("success", false)) {
-                        Toast.makeText(this, "Item deleted successfully.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Report deleted successfully.", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
                         Toast.makeText(this, response.optString("message", "Delete failed."), Toast.LENGTH_SHORT).show();
