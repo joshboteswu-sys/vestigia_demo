@@ -29,6 +29,13 @@
         <activity android:name=".items.ClaimItemActivity" android:exported="false" />
         <activity android:name=".items.AdminPendingClaimsActivity" android:exported="false" />
         <activity android:name=".items.ProfileActivity" android:exported="false" />
+        <activity android:name=".items.AdminHandoversActivity" android:exported="false" />
+        <activity android:name=".items.MyItemsActivity" android:exported="false" />
+        <activity android:name=".auth.ChangePasswordActivity" android:exported="false" />
+        <activity android:name=".items.StaticPageActivity" android:exported="false" />
+        <activity android:name=".items.AdminPanelActivity" android:exported="false" />
+        <activity android:name=".items.AdminUsersActivity" android:exported="false" />
+
 
     </application>
 </manifest>

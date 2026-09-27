@@ -58,6 +58,14 @@ public class ItemDetailActivity extends BaseProtectedActivity {
         loadItem();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (sessionManager.isLoggedIn() && itemId != -1) {
+            loadItem(); // refresh in case a claim status changed elsewhere
+        }
+    }
+
     private void loadItem() {
         progressBar.setVisibility(View.VISIBLE);
         String url = ApiConfig.ITEMS_GET + "?id=" + itemId;
@@ -73,17 +81,16 @@ public class ItemDetailActivity extends BaseProtectedActivity {
                         tvLocationDate.setText(currentItem.getString("location") + "  •  " + currentItem.getString("date_found"));
                         tvDescription.setText(currentItem.optString("description", ""));
 
-                        // ---- Permission restriction: only the reporter can edit/delete ----
+                        // ---- Permission restriction: reporter or admin can edit/delete ----
                         int reportedBy = currentItem.optInt("reported_by", -1);
                         boolean isOwner = sessionManager.canModify(reportedBy);
                         btnEdit.setVisibility(isOwner ? View.VISIBLE : View.GONE);
                         btnDelete.setVisibility(isOwner ? View.VISIBLE : View.GONE);
 
                         // ---- Claim button logic ----
-                        // Show "Claim item" only if: item is Unclaimed, and the current
-                        // user did NOT report it themselves.
+                        // "Active" is the current status vocabulary (was "Unclaimed").
                         String status = currentItem.optString("status", "");
-                        if (status.equals("Unclaimed") && !isOwner) {
+                        if (status.equals("Active") && !isOwner) {
                             btnClaim.setVisibility(View.VISIBLE);
                             btnClaim.setText("Claim item");
                             btnClaim.setEnabled(true);
@@ -114,7 +121,7 @@ public class ItemDetailActivity extends BaseProtectedActivity {
     }
 
     // Checks if the current user already has a claim (pending/rejected) on this
-    // item, so we don't let them spam duplicate submissions.
+    // item, using the current status vocabulary ("Pending Verification").
     private void checkExistingClaim() {
         String url = ApiConfig.CLAIMS_STATUS + "?item_id=" + itemId;
         AuthJsonObjectRequest request = new AuthJsonObjectRequest(
@@ -123,7 +130,7 @@ public class ItemDetailActivity extends BaseProtectedActivity {
                     JSONObject claim = response.optJSONObject("claim");
                     if (claim != null) {
                         String claimStatus = claim.optString("status", "");
-                        if (claimStatus.equals("Pending")) {
+                        if (claimStatus.equals("Pending Verification")) {
                             btnClaim.setText("Claim pending review");
                             btnClaim.setEnabled(false);
                         } else if (claimStatus.equals("Rejected")) {

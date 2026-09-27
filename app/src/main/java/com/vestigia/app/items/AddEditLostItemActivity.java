@@ -124,6 +124,8 @@ public class AddEditLostItemActivity extends BaseProtectedActivity {
         return true;
     }
 
+    // Same pattern as AddEditItemActivity: image decoding happens off the
+    // main thread so the UI never freezes during submit.
     private void saveItem(String url, boolean isUpdate) {
         if (!validate()) return;
         setLoading(true);
@@ -132,7 +134,7 @@ public class AddEditLostItemActivity extends BaseProtectedActivity {
         if (isUpdate) {
             params.put("id", String.valueOf(editingItemId));
             params.put("status", getIntent().getStringExtra("status") != null
-                    ? getIntent().getStringExtra("status") : "Missing");
+                    ? getIntent().getStringExtra("status") : "Active");
         }
         params.put("item_name", etItemName.getText().toString().trim());
         params.put("category", etCategory.getText().toString().trim());
@@ -140,35 +142,49 @@ public class AddEditLostItemActivity extends BaseProtectedActivity {
         params.put("date_lost", etDateLost.getText().toString().trim());
         params.put("description", etDescription.getText().toString().trim());
 
-        VolleyMultipartRequest request = new VolleyMultipartRequest(
-                url, sessionManager.getToken(), params,
-                response -> {
-                    setLoading(false);
-                    if (response.optBoolean("success", false)) {
-                        Toast.makeText(this, isUpdate ? "Lost report updated." : "Lost report submitted.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        showError(response.optString("message", "Could not save report."));
-                    }
-                },
-                error -> {
-                    setLoading(false);
-                    showError("Could not reach the server. Check your connection.");
+        // ---- Background thread: heavy image decode/compress happens here ----
+        new Thread(() -> {
+            byte[] imageBytes = null;
+            if (selectedImageUri != null) {
+                try {
+                    imageBytes = readBytesFromUri(selectedImageUri);
+                } catch (Exception e) {
+                    runOnUiThread(() ->
+                            Toast.makeText(this, "Could not read selected photo, saving without it.", Toast.LENGTH_SHORT).show());
                 }
-        );
-
-        if (selectedImageUri != null) {
-            try {
-                byte[] bytes = readBytesFromUri(selectedImageUri);
-                request.setFile("image", bytes, "photo.jpg", "image/jpeg");
-            } catch (Exception e) {
-                Toast.makeText(this, "Could not read selected photo, saving without it.", Toast.LENGTH_SHORT).show();
             }
-        }
 
-        VolleySingleton.getInstance(this).addToRequestQueue(request);
+            byte[] finalImageBytes = imageBytes;
+
+            // ---- Back on the UI thread: build and fire the actual request ----
+            runOnUiThread(() -> {
+                VolleyMultipartRequest request = new VolleyMultipartRequest(
+                        url, sessionManager.getToken(), params,
+                        response -> {
+                            setLoading(false);
+                            if (response.optBoolean("success", false)) {
+                                Toast.makeText(this, isUpdate ? "Lost report updated." : "Lost report submitted.", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                showError(response.optString("message", "Could not save report."));
+                            }
+                        },
+                        error -> {
+                            setLoading(false);
+                            showError("Could not reach the server. Check your connection.");
+                        }
+                );
+
+                if (finalImageBytes != null) {
+                    request.setFile("image", finalImageBytes, "photo.jpg", "image/jpeg");
+                }
+
+                VolleySingleton.getInstance(this).addToRequestQueue(request);
+            });
+        }).start();
     }
 
+    // Called from a background thread — must never touch UI here.
     private byte[] readBytesFromUri(Uri uri) throws Exception {
         InputStream inputStream = getContentResolver().openInputStream(uri);
         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);

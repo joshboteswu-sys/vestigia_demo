@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,8 +46,6 @@ public class AdminPendingClaimsActivity extends BaseProtectedActivity {
         progressBar = findViewById(R.id.progressBar);
         tvEmpty = findViewById(R.id.tvEmpty);
 
-        // Extra guard: non-admins should never even reach this screen, but if
-        // they somehow do (e.g. deep link), bounce them back immediately.
         if (!sessionManager.isAdmin()) {
             Toast.makeText(this, "Admins only.", Toast.LENGTH_SHORT).show();
             finish();
@@ -111,9 +110,24 @@ public class AdminPendingClaimsActivity extends BaseProtectedActivity {
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    private void rejectClaim(int claimId) {
+    private void showRejectDialog(int claimId) {
+        EditText input = new EditText(this);
+        input.setHint("Reason for rejection (shown to the claimant)");
+
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Reject claim")
+                .setView(input)
+                .setPositiveButton("Reject", (dialog, which) -> rejectClaim(claimId, input.getText().toString().trim()))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void rejectClaim(int claimId, String feedback) {
         JSONObject body = new JSONObject();
-        try { body.put("claim_id", claimId); } catch (Exception ignored) { }
+        try {
+            body.put("claim_id", claimId);
+            body.put("rejection_feedback", feedback);
+        } catch (Exception ignored) { }
 
         AuthJsonObjectRequest request = new AuthJsonObjectRequest(
                 Request.Method.POST, ApiConfig.CLAIMS_REJECT, body, sessionManager.getToken(),
@@ -126,7 +140,6 @@ public class AdminPendingClaimsActivity extends BaseProtectedActivity {
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    // ---- inner adapter ----
     private class ClaimAdapter extends RecyclerView.Adapter<ClaimAdapter.ViewHolder> {
         private final List<JSONObject> data;
 
@@ -153,7 +166,6 @@ public class AdminPendingClaimsActivity extends BaseProtectedActivity {
 
             String photoPath = c.optString("proof_photo_path", null);
             if (photoPath != null && !photoPath.equals("null") && !photoPath.isEmpty()) {
-                // Build the same base URL pattern used elsewhere
                 String imageUrl = ApiConfig.BASE_URL + photoPath;
                 Glide.with(holder.itemView.getContext()).load(imageUrl)
                         .placeholder(android.R.drawable.ic_menu_gallery)
@@ -165,7 +177,7 @@ public class AdminPendingClaimsActivity extends BaseProtectedActivity {
 
             int claimId = c.optInt("claim_id");
             holder.btnApprove.setOnClickListener(v -> approveClaim(claimId));
-            holder.btnReject.setOnClickListener(v -> rejectClaim(claimId));
+            holder.btnReject.setOnClickListener(v -> showRejectDialog(claimId));
         }
 
         @Override
