@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private EditText etFirstName, etLastName, etMiddleInitial, etStudentId,
             etContactNumber, etEmail, etPassword, etConfirmPassword;
+    private Spinner spinnerPreferredContact;
     private Button btnRegister, btnBack, btnSelectPhoto;
     private ImageView ivPhoto;
     private TextView tvError;
@@ -52,12 +55,18 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
+        spinnerPreferredContact = findViewById(R.id.spinnerPreferredContact);
         btnRegister = findViewById(R.id.btnRegister);
         btnBack = findViewById(R.id.btnBack);
         btnSelectPhoto = findViewById(R.id.btnSelectPhoto);
         ivPhoto = findViewById(R.id.ivPhoto);
         tvError = findViewById(R.id.tvError);
         progressBar = findViewById(R.id.progressBar);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item,
+                new String[]{"Email", "SMS", "Push"});
+        spinnerPreferredContact.setAdapter(adapter);
 
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
@@ -82,6 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
+        String preferredContact = spinnerPreferredContact.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) ||
                 TextUtils.isEmpty(studentId) || TextUtils.isEmpty(email) ||
@@ -116,6 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
         params.put("contact_number", contactNumber);
         params.put("email", email);
         params.put("password", password);
+        params.put("preferred_contact", preferredContact);
 
         VolleyMultipartRequest request = new VolleyMultipartRequest(
                 ApiConfig.REGISTER, null, params,
@@ -123,7 +134,7 @@ public class RegisterActivity extends AppCompatActivity {
                     setLoading(false);
                     if (response.optBoolean("success", false)) {
                         Toast.makeText(this, "Account created! Please log in.", Toast.LENGTH_LONG).show();
-                        finish(); // back to Login
+                        finish();
                     } else {
                         showError(response.optString("message", "Registration failed."));
                     }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Admin Panel"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPendingClaims"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="Review pending claims"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/teal_dark"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnHandovers"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="Confirm handovers"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/text_secondary"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnManageUsers"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="Manage users"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:cornerRadius="14dp"
+        app:backgroundTint="@color/teal_light"
+        android:layout_marginBottom="12dp"/>
+
+</LinearLayout>
