@@ -1,6 +1,26 @@
 <?php
 require_once "db.php";
 
+// Now expects multipart/form-data instead of JSON, so a photo file can be attached.
+$firstName = trim($_POST['first_name'] ?? '');
+$lastName = trim($_POST['last_name'] ?? '');
+$middleInitial = trim($_POST['middle_initial'] ?? '');
+$studentId = trim($_POST['student_id'] ?? '');
+$contactNumber = trim($_POST['contact_number'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$password = trim($_POST['password'] ?? '');
+
+$preferredContact = trim($_POST['preferred_contact'] ?? '');
+if ($preferredContact !== '' && !in_array($preferredContact, ['Email', 'SMS', 'Push'])) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Invalid preferred contact method."]);
+    exit;
+}
+$required = compact('firstName', 'lastName', 'studentId', 'email', 'password');
+foreach ($required as $key => $value) {
+    if ($value === '') {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Field '$key' is required."]);
 // Multipart/form-data
 $firstName        = trim($_POST['first_name'] ?? '');
 $lastName         = trim($_POST['last_name'] ?? '');
@@ -27,6 +47,9 @@ foreach ($required as $field => $value) {
     }
 }
 
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Invalid email address."]);
 // Student ID must be 00-0000-000000
 if (!preg_match('/^\d{2}-\d{4}-\d{6}$/', $studentId)) {
     http_response_code(400);
@@ -84,6 +107,24 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
     }
 }
 
+$passwordHash = password_hash($password, PASSWORD_BCRYPT); // never store plain text
+
+$stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, middle_initial, student_id, contact_number, email, password_hash, photo_path, preferred_contact)
+                       VALUES (:first_name, :last_name, :mi, :sid, :contact, :email, :hash, :photo, :preferred) RETURNING id");
+$stmt->execute([
+    "first_name" => $firstName,
+    "last_name"  => $lastName,
+    "mi"         => $middleInitial,
+    "sid"        => $studentId,
+    "contact"    => $contactNumber,
+    "email"      => $email,
+    "hash"       => $passwordHash,
+    "photo"      => $photoPath,
+    "preferred"  => $preferredContact !== '' ? $preferredContact : null
+]);
+$newId = $stmt->fetchColumn();
+
+echo json_encode(["success" => true, "message" => "Account created successfully.", "user_id" => $newId]);
 $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
 try {

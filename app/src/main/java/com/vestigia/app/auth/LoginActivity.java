@@ -1,19 +1,26 @@
 package com.vestigia.app.auth;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.vestigia.app.R;
 import com.vestigia.app.items.DashboardActivity;
 import com.vestigia.app.network.ApiConfig;
@@ -25,10 +32,12 @@ import org.json.JSONObject;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etIdentifier, etPassword;
+    private ImageView ivTogglePassword;
     private Button btnLogin;
-    private TextView tvError, tvGoRegister;
+    private TextView tvError, tvGoRegister, tvForgotPassword;
     private ProgressBar progressBar;
     private SessionManager sessionManager;
+    private boolean passwordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,23 +46,59 @@ public class LoginActivity extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
 
-        // If already logged in, skip straight to dashboard (keeps user logged in
-        // across app restarts).
+        // Already logged in? Skip straight to the home screen.
         if (sessionManager.isLoggedIn()) {
             goToDashboard();
             return;
         }
 
+        // White status bar with dark icons so it blends with the white login screen
+        getWindow().setStatusBarColor(getResources().getColor(R.color.surface));
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .setAppearanceLightStatusBars(true);
+
         etIdentifier = findViewById(R.id.etIdentifier);
         etPassword = findViewById(R.id.etPassword);
+        ivTogglePassword = findViewById(R.id.ivTogglePassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvError = findViewById(R.id.tvError);
         tvGoRegister = findViewById(R.id.tvGoRegister);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
         progressBar = findViewById(R.id.progressBar);
 
         btnLogin.setOnClickListener(v -> attemptLogin());
         tvGoRegister.setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class)));
+
+        ivTogglePassword.setOnClickListener(v -> togglePasswordVisibility());
+
+        tvForgotPassword.setOnClickListener(v ->
+                new AlertDialog.Builder(this)
+                        .setTitle("Forgot your password?")
+                        .setMessage("Please contact a Vestigia administrator to have your password reset.")
+                        .setPositiveButton("OK", null)
+                        .show());
+
+        // Keyboard "Done" key submits the form
+        etPassword.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                attemptLogin();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+        if (passwordVisible) {
+            etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            ivTogglePassword.setImageResource(R.drawable.ic_visibility);
+        } else {
+            etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            ivTogglePassword.setImageResource(R.drawable.ic_visibility_off);
+        }
+        etPassword.setSelection(etPassword.getText().length());
     }
 
     private void attemptLogin() {
@@ -79,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        com.android.volley.toolbox.JsonObjectRequest request = new com.android.volley.toolbox.JsonObjectRequest(
+        JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST, ApiConfig.LOGIN, body,
                 response -> {
                     setLoading(false);
@@ -114,14 +159,12 @@ public class LoginActivity extends AppCompatActivity {
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    // Pulls the "message" field out of the API's JSON error body (e.g.
-    // "Incorrect email/ID or password.") so the user sees the real reason,
-    // not just a generic network error.
+    // Pulls the "message" field out of the API's JSON error body so the user
+    // sees the real reason (e.g. "Incorrect email/ID or password.").
     private String parseServerMessage(VolleyError error) {
         try {
             if (error.networkResponse != null && error.networkResponse.data != null) {
-                String body = new String(error.networkResponse.data);
-                JSONObject json = new JSONObject(body);
+                JSONObject json = new JSONObject(new String(error.networkResponse.data));
                 return json.optString("message", "Login failed. Please try again.");
             }
         } catch (Exception ignored) { }
