@@ -1,1 +1,0 @@
-photo_upload are still local host, pls delete during testing in POSTMAN
