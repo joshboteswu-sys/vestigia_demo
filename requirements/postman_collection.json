@@ -1,0 +1,968 @@
+{
+  "info": {
+    "name": "Vestigia API",
+    "description": "Run Login first. Its test script stores the token in {{token}}, sent to all other requests as a Bearer token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://YOUR-APP.wasmer.app"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Status",
+      "item": [
+        {
+          "name": "API Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Root URL. Confirms the API is online.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Accounts (Use case: register, log in, manage profile)",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "first_name",
+                  "value": "John",
+                  "type": "text"
+                },
+                {
+                  "key": "last_name",
+                  "value": "Doe",
+                  "type": "text"
+                },
+                {
+                  "key": "middle_initial",
+                  "value": "A",
+                  "type": "text"
+                },
+                {
+                  "key": "student_id",
+                  "value": "12-3456-789012",
+                  "type": "text"
+                },
+                {
+                  "key": "contact_number",
+                  "value": "09123456789",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "john.doe@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "password123",
+                  "type": "text"
+                },
+                {
+                  "key": "preferred_contact",
+                  "value": "Email",
+                  "type": "text"
+                },
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": [],
+                  "description": "optional"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "description": "Student ID format 00-0000-000000. preferred_contact: Email, SMS or Push. Password 6+ chars.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "identifier = email or student ID. Test script saves the token to {{token}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.token) { pm.collectionVariables.set('token', j.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check Session",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/check_session",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "check_session"
+              ]
+            },
+            "description": "Returns the logged-in user."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            },
+            "description": "Deletes the current session token."
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profile"
+              ]
+            },
+            "description": "Profile, stats and recent activity of the logged-in user."
+          }
+        },
+        {
+          "name": "Update Profile Photo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": [],
+                  "description": "optional"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/profile_photo_update",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profile_photo_update"
+              ]
+            },
+            "description": "Required file field: photo (jpg, jpeg, png, webp)."
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/change_password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "change_password"
+              ]
+            },
+            "description": "New password 6+ chars.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"password123\",\n  \"new_password\": \"newpass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Found Items (Use case: report and browse found items)",
+      "item": [
+        {
+          "name": "List Found Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/items_list?search=&filter=all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items_list"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "filter",
+                  "value": "all"
+                }
+              ]
+            },
+            "description": "filter: all, today, week, older, mine."
+          }
+        },
+        {
+          "name": "Get Found Item",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/items_get?id=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items_get"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Create Found Item",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "item_name",
+                  "value": "Black wallet",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "Wallet",
+                  "type": "text"
+                },
+                {
+                  "key": "location",
+                  "value": "Library",
+                  "type": "text"
+                },
+                {
+                  "key": "date_found",
+                  "value": "2026-10-10",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Found near the entrance",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "optional"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/items_create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items_create"
+              ]
+            },
+            "description": "Required: item_name, location, date_found (YYYY-MM-DD)."
+          }
+        },
+        {
+          "name": "Update Found Item",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "item_name",
+                  "value": "Black wallet",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "Wallet",
+                  "type": "text"
+                },
+                {
+                  "key": "location",
+                  "value": "Library",
+                  "type": "text"
+                },
+                {
+                  "key": "date_found",
+                  "value": "2026-10-10",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "Active",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "optional"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/items_update",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items_update"
+              ]
+            },
+            "description": "Only the reporter or an admin (403 otherwise). Must be POST form-data."
+          }
+        },
+        {
+          "name": "Delete Found Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/items_delete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "items_delete"
+              ]
+            },
+            "description": "Only the reporter or an admin (403 otherwise). ",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lost Items (Use case: report and browse lost items)",
+      "item": [
+        {
+          "name": "List Lost Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lost_list?search=&filter=all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lost_list"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "filter",
+                  "value": "all"
+                }
+              ]
+            },
+            "description": "filter: all, today, week, older, mine."
+          }
+        },
+        {
+          "name": "Get Lost Item",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/lost_get?id=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lost_get"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Create Lost Report",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "item_name",
+                  "value": "Blue umbrella",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "Accessories",
+                  "type": "text"
+                },
+                {
+                  "key": "last_seen_location",
+                  "value": "Canteen",
+                  "type": "text"
+                },
+                {
+                  "key": "date_lost",
+                  "value": "2026-10-10",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Blue with white handle",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "optional"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/lost_create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lost_create"
+              ]
+            },
+            "description": "Required: item_name, last_seen_location, date_lost."
+          }
+        },
+        {
+          "name": "Update Lost Report",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "item_name",
+                  "value": "Blue umbrella",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "Accessories",
+                  "type": "text"
+                },
+                {
+                  "key": "last_seen_location",
+                  "value": "Canteen",
+                  "type": "text"
+                },
+                {
+                  "key": "date_lost",
+                  "value": "2026-10-10",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "Active",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "optional"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/lost_update",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lost_update"
+              ]
+            },
+            "description": "Only the reporter or an admin (403 otherwise). status: Active, Claimed, Returned or Disposed."
+          }
+        },
+        {
+          "name": "Delete Lost Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/lost_delete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lost_delete"
+              ]
+            },
+            "description": "Only the reporter or an admin (403 otherwise). ",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Claims (Use case: claim a found item and get it verified)",
+      "item": [
+        {
+          "name": "Create Claim",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "item_id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "proof_description",
+                  "value": "It has my initials inside.",
+                  "type": "text"
+                },
+                {
+                  "key": "proof_photo",
+                  "type": "file",
+                  "src": [],
+                  "description": "optional"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/claims_create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "claims_create"
+              ]
+            },
+            "description": "Item must be Active and not reported by you."
+          }
+        },
+        {
+          "name": "My Claim Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/claims_status?item_id=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "claims_status"
+              ],
+              "query": [
+                {
+                  "key": "item_id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Your latest claim on that item."
+          }
+        },
+        {
+          "name": "Pending Claims",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/claims_pending",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "claims_pending"
+              ]
+            },
+            "description": "Admin only (403 otherwise). "
+          }
+        },
+        {
+          "name": "Approve Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/claims_approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "claims_approve"
+              ]
+            },
+            "description": "Admin only (403 otherwise). ",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claim_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Reject Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/claims_reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "claims_reject"
+              ]
+            },
+            "description": "Admin only (403 otherwise). rejection_feedback optional.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claim_id\": 1,\n  \"rejection_feedback\": \"Proof does not match.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Approved Pending Handover",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/claims_approved_pending_handover",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "claims_approved_pending_handover"
+              ]
+            },
+            "description": "Admin only (403 otherwise). "
+          }
+        }
+      ]
+    },
+    {
+      "name": "Handover (Use case: record item return to owner)",
+      "item": [
+        {
+          "name": "Create Handover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/handovers_create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "handovers_create"
+              ]
+            },
+            "description": "Admin only (403 otherwise). Claim must be Approved. Returns receipt_no.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claim_id\": 1,\n  \"verification_notes\": \"ID checked.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feed (Use case: see latest lost and found posts)",
+      "item": [
+        {
+          "name": "Recent Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recent_posts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recent_posts"
+              ]
+            },
+            "description": "Latest 10 lost and found posts combined."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin (Use case: manage users)",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin_users_list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin_users_list"
+              ]
+            },
+            "description": "Admin only (403 otherwise). "
+          }
+        },
+        {
+          "name": "Toggle Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin_toggle_admin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin_toggle_admin"
+              ]
+            },
+            "description": "Admin only (403 otherwise). Cannot change your own status.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
