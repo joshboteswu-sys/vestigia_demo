@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".VestigiaApp"
         android:allowBackup="true"
         android:label="Vestigia"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -20,10 +21,10 @@
 
         <activity android:name=".auth.RegisterActivity" android:exported="false" />
         <activity android:name=".items.DashboardActivity" android:exported="false" />
-        <activity android:name=".items.FoundItemsListActivity" android:exported="false" />
+
         <activity android:name=".items.AddEditItemActivity" android:exported="false" />
         <activity android:name=".items.ItemDetailActivity" android:exported="false" />
-        <activity android:name=".items.LostItemsListActivity" android:exported="false" />
+
         <activity android:name=".items.AddEditLostItemActivity" android:exported="false" />
         <activity android:name=".items.LostItemDetailActivity" android:exported="false" />
         <activity android:name=".items.ClaimItemActivity" android:exported="false" />
@@ -35,6 +36,18 @@
         <activity android:name=".items.StaticPageActivity" android:exported="false" />
         <activity android:name=".items.AdminPanelActivity" android:exported="false" />
         <activity android:name=".items.AdminUsersActivity" android:exported="false" />
+
+        <activity
+            android:name=".auth.VerifyEmailActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity android:name=".items.NotificationsActivity" android:exported="false" />
+        <activity android:name=".items.AnalyticsActivity" android:exported="false" />
+        <activity android:name=".items.BrowseActivity" android:exported="false" />
+        <activity android:name=".items.FilterActivity" android:exported="false" />
+        <activity android:name=".items.ClaimDetailActivity" android:exported="false" />
+        <activity android:name=".items.ReceiptActivity" android:exported="false" />
+        <activity android:name=".auth.ForgotPasswordActivity" android:exported="false" />
 
 
     </application>

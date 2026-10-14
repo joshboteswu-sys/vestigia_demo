@@ -1,6 +1,7 @@
 package com.vestigia.app.network;
 
 import android.content.Context;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
@@ -24,6 +25,8 @@ public class VolleySingleton {
     }
 
     public <T> void addToRequestQueue(com.android.volley.Request<T> req) {
+        // 30s timeout, no automatic retry: a silent retry would submit the same request twice.
+        req.setRetryPolicy(new DefaultRetryPolicy(30000, 0, 1.0f));
         getRequestQueue().add(req);
     }
 }

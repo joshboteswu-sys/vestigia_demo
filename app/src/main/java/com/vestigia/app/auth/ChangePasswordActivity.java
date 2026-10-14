@@ -2,14 +2,18 @@ package com.vestigia.app.auth;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.google.android.material.textfield.TextInputEditText;
+import com.android.volley.VolleyError;
 import com.vestigia.app.R;
 import com.vestigia.app.network.ApiConfig;
 import com.vestigia.app.network.AuthJsonObjectRequest;
@@ -19,9 +23,10 @@ import org.json.JSONObject;
 
 public class ChangePasswordActivity extends BaseProtectedActivity {
 
-    private TextInputEditText etCurrentPassword, etNewPassword, etConfirmNewPassword;
-    private TextView tvError;
-    private Button btnSave, btnBack;
+    private EditText etCurrentPassword, etNewPassword, etConfirmNewPassword;
+    private ImageView ivBack, ivToggleCurrent, ivToggleNew, ivToggleConfirm;
+    private TextView tvTopTitle, tvError;
+    private Button btnSave;
     private ProgressBar progressBar;
 
     @Override
@@ -29,16 +34,38 @@ public class ChangePasswordActivity extends BaseProtectedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
 
+        ivBack = findViewById(R.id.ivBack);
+        tvTopTitle = findViewById(R.id.tvTopTitle);
         etCurrentPassword = findViewById(R.id.etCurrentPassword);
         etNewPassword = findViewById(R.id.etNewPassword);
         etConfirmNewPassword = findViewById(R.id.etConfirmNewPassword);
+        ivToggleCurrent = findViewById(R.id.ivToggleCurrent);
+        ivToggleNew = findViewById(R.id.ivToggleNew);
+        ivToggleConfirm = findViewById(R.id.ivToggleConfirm);
         tvError = findViewById(R.id.tvError);
-        btnSave = findViewById(R.id.btnSave);
-        btnBack = findViewById(R.id.btnBack);
         progressBar = findViewById(R.id.progressBar);
+        btnSave = findViewById(R.id.btnSave);
 
-        btnBack.setOnClickListener(v -> finish());
+        tvTopTitle.setText("Change password");
+
+        ivBack.setOnClickListener(v -> finish());
         btnSave.setOnClickListener(v -> attemptChange());
+
+        setupToggle(etCurrentPassword, ivToggleCurrent);
+        setupToggle(etNewPassword, ivToggleNew);
+        setupToggle(etConfirmNewPassword, ivToggleConfirm);
+    }
+
+    // Eye icon: crossed-out = hidden, open = visible
+    private void setupToggle(EditText field, ImageView toggle) {
+        toggle.setOnClickListener(v -> {
+            boolean hidden = field.getTransformationMethod() instanceof PasswordTransformationMethod;
+            field.setTransformationMethod(hidden
+                    ? HideReturnsTransformationMethod.getInstance()
+                    : PasswordTransformationMethod.getInstance());
+            toggle.setImageResource(hidden ? R.drawable.ic_visibility : R.drawable.ic_visibility_off);
+            field.setSelection(field.getText().length());
+        });
     }
 
     private void attemptChange() {
@@ -88,11 +115,10 @@ public class ChangePasswordActivity extends BaseProtectedActivity {
                     showError(parseServerMessage(error));
                 }
         );
-
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 
-    private String parseServerMessage(com.android.volley.VolleyError error) {
+    private String parseServerMessage(VolleyError error) {
         try {
             if (error.networkResponse != null && error.networkResponse.data != null) {
                 JSONObject json = new JSONObject(new String(error.networkResponse.data));

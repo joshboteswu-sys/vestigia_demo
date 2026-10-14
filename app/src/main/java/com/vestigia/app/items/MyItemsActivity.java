@@ -95,7 +95,8 @@ public class MyItemsActivity extends BaseProtectedActivity {
                 },
                 error -> {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Could not load your found items.", Toast.LENGTH_SHORT).show();
+                    android.util.Log.e("MyItemsActivity", "Error loading found items", error);
+                    Toast.makeText(this, "Could not load your found items. Please check your connection.", Toast.LENGTH_SHORT).show();
                 }
         );
         VolleySingleton.getInstance(this).addToRequestQueue(request);
@@ -125,7 +126,10 @@ public class MyItemsActivity extends BaseProtectedActivity {
                         Toast.makeText(this, "Could not read lost reports.", Toast.LENGTH_SHORT).show();
                     }
                 },
-                error -> Toast.makeText(this, "Could not load your lost reports.", Toast.LENGTH_SHORT).show()
+                error -> {
+                    android.util.Log.e("MyItemsActivity", "Error loading lost reports", error);
+                    Toast.makeText(this, "Could not load your lost reports. Please check your connection.", Toast.LENGTH_SHORT).show();
+                }
         );
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }

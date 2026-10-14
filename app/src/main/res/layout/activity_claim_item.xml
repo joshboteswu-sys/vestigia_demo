@@ -1,101 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/background">
 
-    <LinearLayout
+    <include layout="@layout/view_form_topbar"/>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Submit proof of ownership"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginTop="12dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Help us confirm it's yours."
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            android:layout_marginBottom="16dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_card"
-            android:elevation="2dp"
-            android:padding="16dp"
-            android:layout_marginBottom="20dp">
+            android:padding="16dp">
+
+            <TextView style="@style/RegSection" android:text="ITEM"/>
+
+            <LinearLayout style="@style/RegCard">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_inventory" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="You're claiming"/>
+                    <TextView
+                        android:id="@+id/tvItemName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvItemMeta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:layout_marginTop="2dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView style="@style/RegSection" android:text="PROOF OF OWNERSHIP" android:layout_marginTop="12dp"/>
+
+            <LinearLayout style="@style/RegCard" android:layout_marginBottom="6dp">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_description" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Describe your proof"/>
+                    <EditText android:id="@+id/etProofDescription" style="@style/RegInput"
+                        android:hint="When you lost it, distinguishing marks, contents…"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:minLines="4"
+                        android:maxLines="10"
+                        android:gravity="top"/>
+                </LinearLayout>
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tvItemName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:id="@+id/tvItemMeta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:text="Mention something only the real owner would know."
                 android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:layout_marginTop="4dp"/>
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView style="@style/RegSection" android:text="PHOTO (OPTIONAL)"/>
+
+            <FrameLayout
+                android:id="@+id/photoSlot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:elevation="2dp"
+                android:padding="14dp"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:background="@drawable/bg_dashed_slot"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:id="@+id/ivProofPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        android:contentDescription="Proof photo"/>
+
+                    <LinearLayout
+                        android:id="@+id/photoPlaceholder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_camera"
+                            android:tint="@color/text_secondary"
+                            android:contentDescription="@null"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Add proof photo"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+                </FrameLayout>
+            </FrameLayout>
+
         </LinearLayout>
+    </ScrollView>
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="When you lost it, distinguishing marks, contents"
-            app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="16dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etProofDescription"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minLines="4" android:gravity="top"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Upload photo (optional)"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            android:layout_marginBottom="8dp"/>
-
-        <ImageView
-            android:id="@+id/ivProofPhoto"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:scaleType="centerCrop"
-            android:background="@color/teal_pale"
-            android:contentDescription="Proof photo"
-            android:src="@android:drawable/ic_menu_gallery"
-            android:layout_marginBottom="8dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSelectPhoto"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tap to upload"
-            android:textAllCaps="false"
-            app:cornerRadius="14dp"
-            app:strokeColor="@color/teal_dark"
-            android:textColor="@color/teal_dark"
-            android:layout_marginBottom="8dp"/>
+    <!-- Bottom bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/surface"
+        android:elevation="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
 
         <TextView
             android:id="@+id/tvError"
@@ -110,28 +146,24 @@
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:indeterminateTint="@color/teal_dark"
             android:visibility="gone"
             android:layout_marginBottom="8dp"/>
 
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmit"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnBack"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1"
-                android:layout_marginEnd="8dp" android:text="Back" android:textAllCaps="false"
-                app:cornerRadius="14dp" app:strokeColor="@color/teal_dark" android:textColor="@color/teal_dark"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSubmit"
-                android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1"
-                android:text="Submit claim" android:textAllCaps="false"
-                app:cornerRadius="14dp" app:backgroundTint="@color/teal_dark"/>
-        </LinearLayout>
-
+            android:layout_height="56dp"
+            android:text="Submit claim"
+            android:textAllCaps="false"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_check_circle"
+            app:iconGravity="textStart"
+            app:iconTint="@color/surface"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/teal_dark"/>
     </LinearLayout>
-</ScrollView>
+
+</LinearLayout>

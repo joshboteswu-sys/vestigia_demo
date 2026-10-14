@@ -1,103 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/background">
 
+    <include layout="@layout/view_form_topbar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView style="@style/RegSection" android:text="PHOTO"/>
+
+            <FrameLayout
+                android:id="@+id/photoSlot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:elevation="2dp"
+                android:padding="14dp"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp"
+                    android:background="@drawable/bg_dashed_slot"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:id="@+id/ivPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        android:contentDescription="Item photo"/>
+
+                    <LinearLayout
+                        android:id="@+id/photoPlaceholder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_camera"
+                            android:tint="@color/text_secondary"
+                            android:contentDescription="@null"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Add photo"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:layout_marginTop="6dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tap to choose from your gallery"
+                            android:textColor="#A0AEC0"
+                            android:textSize="11sp"/>
+                    </LinearLayout>
+                </FrameLayout>
+            </FrameLayout>
+
+            <TextView style="@style/RegSection" android:text="DETAILS"/>
+
+            <LinearLayout style="@style/RegCard">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_edit" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Item name"/>
+                    <EditText android:id="@+id/etItemName" style="@style/RegInput"
+                        android:hint="e.g. Black wallet"
+                        android:inputType="textCapWords"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout style="@style/RegCard">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_tag" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Category"/>
+                    <EditText android:id="@+id/etCategory" style="@style/RegInput"
+                        android:hint="e.g. Personal belongings"
+                        android:inputType="textCapWords"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rowDate"
+                style="@style/RegCard"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_calendar" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Date lost"/>
+                    <TextView
+                        android:id="@+id/tvDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Select a date"
+                        android:textColorHint="#A0AEC0"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"/>
+                </LinearLayout>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:tint="@color/text_secondary"
+                    android:contentDescription="@null"/>
+            </LinearLayout>
+
+            <LinearLayout style="@style/RegCard">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_location" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Last seen location"/>
+                    <EditText android:id="@+id/etLocation" style="@style/RegInput"
+                        android:hint="e.g. Cafeteria"
+                        android:inputType="textCapSentences"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout style="@style/RegCard">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_description" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Description"/>
+                    <EditText android:id="@+id/etDescription" style="@style/RegInput"
+                        android:hint="Marks, colour, contents…"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:minLines="3"
+                        android:maxLines="8"
+                        android:gravity="top"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Report a lost item"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="20dp"/>
-        <ImageView
-            android:id="@+id/ivPhoto"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:scaleType="centerCrop"
-            android:background="@color/teal_pale"
-            android:contentDescription="Item photo"
-            android:src="@android:drawable/ic_menu_gallery"
-            android:layout_marginBottom="8dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSelectPhoto"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Select photo"
-            android:textAllCaps="false"
-            app:cornerRadius="14dp"
-            app:strokeColor="@color/teal_dark"
-            android:textColor="@color/teal_dark"
-            android:layout_marginBottom="16dp"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="Item name" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etItemName" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="Category (e.g. Electronics)" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etCategory" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="Found location" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="10dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etLocation" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="Date found (YYYY-MM-DD)"
-            app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="@color/teal_dark"
-            app:endIconDrawable="@android:drawable/ic_menu_my_calendar"
-            app:endIconTint="@color/teal_dark"
-            android:layout_marginBottom="10dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDateFound" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:focusable="false" android:clickable="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="Description / distinguishing marks" app:boxCornerRadiusTopStart="12dp" app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp" app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="@color/teal_dark" android:layout_marginBottom="8dp">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDescription" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minLines="3" android:gravity="top"/>
-        </com.google.android.material.textfield.TextInputLayout>
+        android:background="@color/surface"
+        android:elevation="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
 
         <TextView
             android:id="@+id/tvError"
@@ -112,28 +180,24 @@
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:indeterminateTint="@color/teal_dark"
             android:visibility="gone"
             android:layout_marginBottom="8dp"/>
 
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnBack"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1"
-                android:layout_marginEnd="8dp" android:text="Back" android:textAllCaps="false"
-                app:cornerRadius="14dp" app:strokeColor="@color/teal_dark" android:textColor="@color/teal_dark"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSave"
-                android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1"
-                android:text="Save" android:textAllCaps="false"
-                app:cornerRadius="14dp" app:backgroundTint="@color/teal_dark"/>
-        </LinearLayout>
-
+            android:layout_height="56dp"
+            android:text="Submit"
+            android:textAllCaps="false"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_check_circle"
+            app:iconGravity="textStart"
+            app:iconTint="@color/surface"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/teal_dark"/>
     </LinearLayout>
-</ScrollView>
+
+</LinearLayout>

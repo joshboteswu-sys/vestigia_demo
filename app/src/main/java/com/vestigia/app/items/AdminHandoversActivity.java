@@ -1,5 +1,6 @@
 package com.vestigia.app.items;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
+import com.android.volley.VolleyError;
 import com.vestigia.app.R;
 import com.vestigia.app.auth.BaseProtectedActivity;
 import com.vestigia.app.network.ApiConfig;
@@ -27,6 +29,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+// Admins: every approved claim waiting for pickup.
+// Finders: only approved claims on items they are still holding.
 public class AdminHandoversActivity extends BaseProtectedActivity {
 
     private RecyclerView recyclerView;
@@ -44,12 +48,6 @@ public class AdminHandoversActivity extends BaseProtectedActivity {
         progressBar = findViewById(R.id.progressBar);
         tvEmpty = findViewById(R.id.tvEmpty);
 
-        if (!sessionManager.isAdmin()) {
-            Toast.makeText(this, "Admins only.", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
         adapter = new HandoverAdapter(approvedClaims);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -60,7 +58,7 @@ public class AdminHandoversActivity extends BaseProtectedActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (sessionManager.isLoggedIn() && sessionManager.isAdmin()) {
+        if (sessionManager.isLoggedIn()) {
             loadApprovedClaims();
         }
     }
@@ -87,7 +85,7 @@ public class AdminHandoversActivity extends BaseProtectedActivity {
                 },
                 error -> {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "Could not load approved claims.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Could not load pending handovers.", Toast.LENGTH_SHORT).show();
                 }
         );
         VolleySingleton.getInstance(this).addToRequestQueue(request);
@@ -107,9 +105,31 @@ public class AdminHandoversActivity extends BaseProtectedActivity {
                     Toast.makeText(this, "Handover recorded. Receipt: " + receipt, Toast.LENGTH_LONG).show();
                     loadApprovedClaims();
                 },
-                error -> Toast.makeText(this, "Could not record handover.", Toast.LENGTH_SHORT).show()
+                error -> Toast.makeText(this, serverMessage(error, "Could not record handover."), Toast.LENGTH_LONG).show()
         );
         VolleySingleton.getInstance(this).addToRequestQueue(request);
+    }
+
+    private String serverMessage(VolleyError error, String fallback) {
+        try {
+            if (error.networkResponse != null && error.networkResponse.data != null) {
+                return new JSONObject(new String(error.networkResponse.data)).optString("message", fallback);
+            }
+        } catch (Exception ignored) { }
+        return "Could not reach the server.";
+    }
+
+    private void showConfirmDialog(int claimId) {
+        EditText input = new EditText(this);
+        input.setHint("Verification notes (e.g. ID checked, item inspected)");
+
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Confirm handover")
+                .setMessage("Confirm that the claimant has physically received this item.")
+                .setView(input)
+                .setPositiveButton("Confirm", (dialog, which) -> confirmHandover(claimId, input.getText().toString().trim()))
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private class HandoverAdapter extends RecyclerView.Adapter<HandoverAdapter.ViewHolder> {
@@ -133,9 +153,16 @@ public class AdminHandoversActivity extends BaseProtectedActivity {
             holder.tvItemName.setText(c.optString("item_name"));
             holder.tvClaimant.setText("Approved for: " + c.optString("first_name") + " " + c.optString("last_name")
                     + " (" + c.optString("email") + ")");
-            holder.tvMeta.setText(c.optString("location") + "  •  Approved " + c.optString("decision_date"));
+
+            String where = "Admin".equals(c.optString("custody_holder")) ? "In the Admin Office" : "With the finder";
+            holder.tvMeta.setText(where + "  •  " + c.optString("location") + "  •  Approved " + c.optString("decision_date"));
 
             int claimId = c.optInt("claim_id");
+            holder.itemView.setOnClickListener(v -> {
+                Intent i = new Intent(AdminHandoversActivity.this, ClaimDetailActivity.class);
+                i.putExtra("claim_id", claimId);
+                startActivity(i);
+            });
             holder.btnConfirm.setOnClickListener(v -> showConfirmDialog(claimId));
         }
 
@@ -156,18 +183,5 @@ public class AdminHandoversActivity extends BaseProtectedActivity {
                 btnConfirm = itemView.findViewById(R.id.btnConfirm);
             }
         }
-    }
-
-    private void showConfirmDialog(int claimId) {
-        EditText input = new EditText(this);
-        input.setHint("Verification notes (e.g. ID checked, item inspected)");
-
-        new android.app.AlertDialog.Builder(this)
-                .setTitle("Confirm handover")
-                .setMessage("Confirm that the claimant has physically received this item.")
-                .setView(input)
-                .setPositiveButton("Confirm", (dialog, which) -> confirmHandover(claimId, input.getText().toString().trim()))
-                .setNegativeButton("Cancel", null)
-                .show();
     }
 }

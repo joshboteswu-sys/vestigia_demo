@@ -1,6 +1,5 @@
 package com.vestigia.app.auth;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -72,12 +71,11 @@ public class LoginActivity extends AppCompatActivity {
 
         ivTogglePassword.setOnClickListener(v -> togglePasswordVisibility());
 
-        tvForgotPassword.setOnClickListener(v ->
-                new AlertDialog.Builder(this)
-                        .setTitle("Forgot your password?")
-                        .setMessage("Please contact a Vestigia administrator to have your password reset.")
-                        .setPositiveButton("OK", null)
-                        .show());
+        tvForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ForgotPasswordActivity.class);
+            intent.putExtra(ForgotPasswordActivity.EXTRA_IDENTIFIER, etIdentifier.getText().toString().trim());
+            startActivity(intent);
+        });
 
         // Keyboard "Done" key submits the form
         etPassword.setOnEditorActionListener((v, actionId, event) -> {
@@ -152,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                 },
                 error -> {
                     setLoading(false);
-                    showError(parseServerMessage(error));
+                    handleLoginError(error, identifier);
                 }
         );
 
@@ -190,5 +188,21 @@ public class LoginActivity extends AppCompatActivity {
     private void setLoading(boolean loading) {
         progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
         btnLogin.setEnabled(!loading);
+    }
+    // An unverified account sends the user to the verification screen instead of showing an error.
+    private void handleLoginError(VolleyError error, String typedIdentifier) {
+        try {
+            if (error.networkResponse != null && error.networkResponse.data != null) {
+                JSONObject json = new JSONObject(new String(error.networkResponse.data));
+                if ("email_not_verified".equals(json.optString("error"))) {
+                    Intent intent = new Intent(this, VerifyEmailActivity.class);
+                    intent.putExtra(VerifyEmailActivity.EXTRA_EMAIL, json.optString("email", typedIdentifier));
+                    intent.putExtra(VerifyEmailActivity.EXTRA_AUTO_RESEND, true); // send a fresh code on open
+                    startActivity(intent);
+                    return;
+                }
+            }
+        } catch (Exception ignored) { }
+        showError(parseServerMessage(error));
     }
 }

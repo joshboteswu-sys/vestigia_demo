@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import android.content.Intent;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -226,8 +227,11 @@ public class RegisterActivity extends AppCompatActivity {
                         response -> {
                             setLoading(false);
                             if (response.optBoolean("success", false)) {
-                                Toast.makeText(this, "Account created! Please sign in.", Toast.LENGTH_LONG).show();
-                                finish();
+                                Intent intent = new Intent(this, VerifyEmailActivity.class);
+                                intent.putExtra(VerifyEmailActivity.EXTRA_EMAIL, response.optString("email", email));
+                                intent.putExtra(VerifyEmailActivity.EXTRA_SEND_FAILED, !response.optBoolean("email_sent", true));
+                                startActivity(intent);
+                                finish(); // the Login screen stays underneath
                             } else {
                                 showError(response.optString("message", "Registration failed."));
                             }

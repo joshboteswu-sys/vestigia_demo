@@ -1,5 +1,6 @@
 package com.vestigia.app.items;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -176,6 +177,11 @@ public class AdminPendingClaimsActivity extends BaseProtectedActivity {
             }
 
             int claimId = c.optInt("claim_id");
+            holder.itemView.setOnClickListener(v -> {
+                Intent i = new Intent(AdminPendingClaimsActivity.this, ClaimDetailActivity.class);
+                i.putExtra("claim_id", claimId);
+                startActivity(i);
+            });
             holder.btnApprove.setOnClickListener(v -> approveClaim(claimId));
             holder.btnReject.setOnClickListener(v -> showRejectDialog(claimId));
         }

@@ -203,9 +203,14 @@ public class ProfileActivity extends BaseProtectedActivity {
             TextView tvStatus = row.findViewById(R.id.tvStatus);
 
             String status = o.getString("status");
-            String friendlyStatus = status.equals("Approved") ? "Verified / Ready for pickup"
-                    : status.equals("Pending") ? "Pending review"
-                      : "Rejected";
+            String friendlyStatus;
+            switch (status) {
+                case "Approved":             friendlyStatus = "Approved - ready for pickup"; break;
+                case "Pending Verification": friendlyStatus = "Pending review"; break;
+                case "Completed":            friendlyStatus = "Returned to you"; break;
+                case "Withdrawn":            friendlyStatus = "Withdrawn"; break;
+                default:                     friendlyStatus = "Rejected";
+            }
 
             tvTitle.setText(o.getString("item_name"));
             tvMeta.setText("Claim " + status + "  •  " + o.optString("location", "") + "  •  Ref #IT-" + o.getInt("id"));

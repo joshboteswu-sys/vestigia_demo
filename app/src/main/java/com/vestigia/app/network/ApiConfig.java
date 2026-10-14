@@ -36,4 +36,20 @@ public class ApiConfig {
 
     public static final String CHANGE_PASSWORD = BASE_URL + "change_password.php";
     public static final String RECENT_POSTS = BASE_URL + "recent_posts.php";
+
+    public static final String VERIFY_EMAIL = BASE_URL + "verify_email.php";
+    public static final String RESEND_VERIFICATION = BASE_URL + "resend_verification.php";
+    public static final String NOTIFICATIONS_LIST = BASE_URL + "notifications_list.php";
+    public static final String NOTIFICATIONS_READ = BASE_URL + "notifications_read.php";
+    public static final String CUSTODY_RECEIVE = BASE_URL + "custody_receive.php";
+    public static final String ANALYTICS = BASE_URL + "analytics.php";
+    public static final String POSTS_LIST = BASE_URL + "posts_list.php";
+    public static final String CLAIMS_GET = BASE_URL + "claims_get.php";
+    public static final String ADMIN_SUMMARY = BASE_URL + "admin_summary.php";
+    public static final String RECEIPT_GET = BASE_URL + "receipt_get.php";
+    public static final String FORGOT_PASSWORD = BASE_URL + "forgot_password.php";
+    public static final String RESET_PASSWORD = BASE_URL + "reset_password.php";
+    public static final String LOST_RESOLVE = BASE_URL + "lost_resolve.php";
+    public static final String ITEMS_DISPOSE = BASE_URL + "items_dispose.php";
+    public static final String CLAIMS_WITHDRAW = BASE_URL + "claims_withdraw.php";
 }

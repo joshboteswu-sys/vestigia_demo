@@ -35,10 +35,10 @@ public class RecentPostAdapter extends RecyclerView.Adapter<RecentPostAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         RecentPost post = posts.get(position);
-        holder.tvBadge.setText(post.getItemType().toUpperCase());
         boolean isFound = post.getItemType().equals("Found");
-        holder.tvBadge.setBackgroundResource(R.drawable.bg_status_pill);
-        holder.tvBadge.setTextColor(isFound ? 0xFF0F766E : 0xFFEF4444);
+
+        holder.tvBadge.setText(post.getItemType().toUpperCase());
+        holder.tvBadge.setBackgroundResource(isFound ? R.drawable.bg_badge_found : R.drawable.bg_badge_lost);
 
         holder.tvItemName.setText(post.getItemName());
         holder.tvLocation.setText(post.getLocation());
@@ -52,12 +52,8 @@ public class RecentPostAdapter extends RecyclerView.Adapter<RecentPostAdapter.Vi
                 .into(holder.ivImage);
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent;
-            if (isFound) {
-                intent = new Intent(v.getContext(), ItemDetailActivity.class);
-            } else {
-                intent = new Intent(v.getContext(), LostItemDetailActivity.class);
-            }
+            Intent intent = new Intent(v.getContext(),
+                    isFound ? ItemDetailActivity.class : LostItemDetailActivity.class);
             intent.putExtra("item_id", post.getId());
             v.getContext().startActivity(intent);
         });

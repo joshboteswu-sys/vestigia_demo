@@ -36,7 +36,7 @@ import java.util.List;
 public class DashboardActivity extends BaseProtectedActivity {
 
     private DrawerLayout drawerLayout;
-    private TextView tvWelcome, tvViewAll, tvEmptyPendingLost;
+    private TextView tvWelcome, tvViewAll, tvEmptyPendingLost, tvBellBadge;
     private Button btnPost;
     private ProgressBar progressBarPosts;
     private RecyclerView recyclerRecentPosts, recyclerPendingLost;
@@ -54,6 +54,11 @@ public class DashboardActivity extends BaseProtectedActivity {
         drawerLayout = findViewById(R.id.drawerLayout);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
+        // Notification bell -> notifications screen
+        tvBellBadge = findViewById(R.id.tvBellBadge);
+        findViewById(R.id.bellContainer).setOnClickListener(v ->
+                startActivity(new Intent(this, NotificationsActivity.class)));
 
         tvWelcome = findViewById(R.id.tvWelcome);
         tvViewAll = findViewById(R.id.tvViewAll);
@@ -73,8 +78,8 @@ public class DashboardActivity extends BaseProtectedActivity {
         recyclerPendingLost.setLayoutManager(new LinearLayoutManager(this));
         recyclerPendingLost.setAdapter(pendingLostAdapter);
 
-        btnPost.setOnClickListener(v -> showReportChoiceDialog());
-        tvViewAll.setOnClickListener(v -> startActivity(new Intent(this, FoundItemsListActivity.class)));
+        btnPost.setOnClickListener(v -> ReportChooser.show(this));
+        tvViewAll.setOnClickListener(v -> openBrowse("all"));
 
         setupDrawer();
     }
@@ -85,20 +90,27 @@ public class DashboardActivity extends BaseProtectedActivity {
         if (sessionManager.isLoggedIn()) {
             loadRecentPosts();
             loadPendingLostReports();
+            loadUnreadCount();
         }
     }
 
-    private void showReportChoiceDialog() {
-        new android.app.AlertDialog.Builder(this)
-                .setTitle("What would you like to report?")
-                .setItems(new String[]{"Found item", "Lost item"}, (dialog, which) -> {
-                    if (which == 0) {
-                        startActivity(new Intent(this, AddEditItemActivity.class));
-                    } else {
-                        startActivity(new Intent(this, AddEditLostItemActivity.class));
-                    }
-                })
-                .show();
+    private void openBrowse(String type) {
+        Intent intent = new Intent(this, BrowseActivity.class);
+        intent.putExtra(BrowseActivity.EXTRA_TYPE, type);
+        startActivity(intent);
+    }
+
+    private void loadUnreadCount() {
+        AuthJsonObjectRequest request = new AuthJsonObjectRequest(
+                Request.Method.GET, ApiConfig.NOTIFICATIONS_LIST + "?limit=1", null, sessionManager.getToken(),
+                response -> {
+                    int unread = response.optInt("unread_count", 0);
+                    tvBellBadge.setVisibility(unread > 0 ? View.VISIBLE : View.GONE);
+                    tvBellBadge.setText(unread > 99 ? "99+" : String.valueOf(unread));
+                },
+                error -> { /* the badge simply stays as it was */ }
+        );
+        VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 
     private void loadRecentPosts() {
@@ -129,7 +141,8 @@ public class DashboardActivity extends BaseProtectedActivity {
                 },
                 error -> {
                     progressBarPosts.setVisibility(View.GONE);
-                    Toast.makeText(this, "Could not load recent posts.", Toast.LENGTH_SHORT).show();
+                    android.util.Log.e("DashboardActivity", "Error loading recent posts", error);
+                    Toast.makeText(this, "Could not load recent posts. Please check your connection.", Toast.LENGTH_SHORT).show();
                 }
         );
         VolleySingleton.getInstance(this).addToRequestQueue(request);
@@ -146,7 +159,6 @@ public class DashboardActivity extends BaseProtectedActivity {
                         List<LostItem> results = new ArrayList<>();
                         for (int i = 0; i < arr.length(); i++) {
                             JSONObject o = arr.getJSONObject(i);
-                            // Only show reports still Active (i.e. genuinely "pending" — not yet resolved)
                             if (!o.getString("status").equals("Active")) continue;
                             results.add(new LostItem(
                                     o.getInt("id"), o.getString("item_name"), o.optString("description", ""),
@@ -161,7 +173,10 @@ public class DashboardActivity extends BaseProtectedActivity {
                         Toast.makeText(this, "Could not read lost reports.", Toast.LENGTH_SHORT).show();
                     }
                 },
-                error -> Toast.makeText(this, "Could not load your lost reports.", Toast.LENGTH_SHORT).show()
+                error -> {
+                    android.util.Log.e("DashboardActivity", "Error loading pending lost reports", error);
+                    Toast.makeText(this, "Could not load your lost reports. Please check your connection.", Toast.LENGTH_SHORT).show();
+                }
         );
         VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
@@ -173,16 +188,19 @@ public class DashboardActivity extends BaseProtectedActivity {
         tvDrawerUserName.setText(sessionManager.getFullName());
 
         bindRow(drawerContent, R.id.rowFoundItems, android.R.drawable.ic_menu_search, "Found Items",
-                () -> startActivity(new Intent(this, FoundItemsListActivity.class)));
+                () -> openBrowse("found"));
 
         bindRow(drawerContent, R.id.rowLostItems, android.R.drawable.ic_dialog_alert, "Lost Items",
-                () -> startActivity(new Intent(this, LostItemsListActivity.class)));
+                () -> openBrowse("lost"));
 
         bindRow(drawerContent, R.id.rowAccount, android.R.drawable.ic_menu_myplaces, "Account",
                 () -> startActivity(new Intent(this, ProfileActivity.class)));
 
         bindRow(drawerContent, R.id.rowMyItems, android.R.drawable.ic_menu_agenda, "My Items",
                 () -> startActivity(new Intent(this, MyItemsActivity.class)));
+
+        bindRow(drawerContent, R.id.rowHandovers, android.R.drawable.ic_menu_send, "Pending handovers",
+                () -> startActivity(new Intent(this, AdminHandoversActivity.class)));
 
         bindRow(drawerContent, R.id.rowChangePassword, android.R.drawable.ic_lock_lock, "Change Password",
                 () -> startActivity(new Intent(this, ChangePasswordActivity.class)));

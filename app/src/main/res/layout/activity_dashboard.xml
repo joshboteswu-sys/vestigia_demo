@@ -18,9 +18,54 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/teal_dark"
-            app:titleTextColor="@color/surface"
-            app:navigationIcon="@android:drawable/ic_menu_sort_by_size"
-            app:title="Lost &amp; Found"/>
+            app:navigationIcon="@drawable/ic_menu">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="4dp"
+                android:text="Vestigia"
+                android:textColor="@color/surface"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.04"/>
+
+            <!-- Notification bell + unread badge -->
+            <FrameLayout
+                android:id="@+id/bellContainer"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_bell"
+                    android:contentDescription="Notifications"/>
+
+                <TextView
+                    android:id="@+id/tvBellBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="18dp"
+                    android:minWidth="18dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="4dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="4dp"
+                    android:background="@drawable/bg_badge"
+                    android:textColor="@color/surface"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
+            </FrameLayout>
+        </androidx.appcompat.widget.Toolbar>
 
         <ScrollView
             android:layout_width="match_parent"
@@ -29,42 +74,63 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingHorizontal="10dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="24dp">
 
-                <!-- Greeting card -->
+                <!-- Compact greeting card (clearly separated from the header) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@color/teal_dark"
-                    android:padding="20dp">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_card"
+                    android:elevation="2dp"
+                    android:padding="14dp"
+                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginBottom="18dp">
 
-                    <TextView
-                        android:id="@+id/tvWelcome"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/surface"/>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Let's help something find its way home."
-                        android:textColor="@color/teal_pale"
-                        android:textSize="13sp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"/>
+                        <TextView
+                            android:id="@+id/tvWelcome"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:maxLines="1"
+                            android:ellipsize="end"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Help something find its way home."
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            android:layout_marginTop="2dp"/>
+                    </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPost"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Report an item"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="10dp"
+                        android:text="Report"
                         android:textAllCaps="false"
-                        app:icon="@android:drawable/ic_input_add"
-                        app:cornerRadius="24dp"
-                        app:backgroundTint="@color/teal_light"/>
+                        android:textSize="14sp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        app:icon="@drawable/ic_plus"
+                        app:iconSize="18dp"
+                        app:iconTint="@color/surface"
+                        app:cornerRadius="20dp"
+                        app:backgroundTint="@color/teal_dark"/>
                 </LinearLayout>
 
                 <!-- Recent Posts -->
@@ -72,7 +138,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="6dp"
+                    android:layout_marginBottom="4dp">
 
                     <TextView
                         android:layout_width="0dp"
@@ -90,7 +158,8 @@
                         android:text="View All &gt;"
                         android:textColor="@color/teal_dark"
                         android:textStyle="bold"
-                        android:textSize="13sp"/>
+                        android:textSize="13sp"
+                        android:padding="6dp"/>
                 </LinearLayout>
 
                 <ProgressBar
@@ -105,32 +174,32 @@
                     android:id="@+id/recyclerRecentPosts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="10dp"
                     android:nestedScrollingEnabled="false"/>
 
-                <!-- Your Pending Lost Reports -->
+                <!-- Your pending lost reports -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@color/teal_dark"
-                    android:padding="16dp"
-                    android:layout_marginTop="20dp">
+                    android:paddingHorizontal="6dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginBottom="8dp">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Your Pending Lost Reports"
                         android:textStyle="bold"
-                        android:textColor="@color/surface"
-                        android:textSize="16sp"/>
+                        android:textSize="17sp"
+                        android:textColor="@color/text_primary"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Items you've reported that are still missing"
-                        android:textColor="@color/teal_pale"
-                        android:textSize="12sp"/>
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:layout_marginTop="2dp"/>
                 </LinearLayout>
 
                 <TextView
@@ -140,14 +209,14 @@
                     android:text="You have no pending lost reports."
                     android:textColor="@color/text_secondary"
                     android:gravity="center"
-                    android:padding="24dp"
+                    android:padding="20dp"
                     android:visibility="gone"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerPendingLost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp"
+                    android:paddingHorizontal="6dp"
                     android:nestedScrollingEnabled="false"/>
 
             </LinearLayout>

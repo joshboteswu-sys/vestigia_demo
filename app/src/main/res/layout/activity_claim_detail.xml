@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <include layout="@layout/view_form_topbar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:indeterminateTint="@color/teal_dark"
+                android:visibility="gone"/>
+
+            <include layout="@layout/view_detail_hero"/>
+
+            <!-- CLAIMANT -->
+            <LinearLayout style="@style/DetailCard">
+                <TextView style="@style/DetailSection" android:text="CLAIMANT"/>
+
+                <LinearLayout style="@style/DetailRow">
+                    <ImageView style="@style/DetailIcon" android:src="@drawable/ic_person"/>
+                    <LinearLayout style="@style/DetailTextCol">
+                        <TextView style="@style/DetailLabel" android:text="NAME"/>
+                        <TextView android:id="@+id/tvClaimant" style="@style/DetailValue"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <View style="@style/DetailDivider"/>
+
+                <LinearLayout
+                    android:id="@+id/rowClaimEmail"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true">
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon.Blue" android:src="@drawable/ic_email"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="EMAIL"/>
+                            <TextView android:id="@+id/tvClaimEmail" style="@style/DetailValue"/>
+                        </LinearLayout>
+                        <ImageView android:layout_width="20dp" android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right" android:tint="@color/text_secondary"
+                            android:contentDescription="@null"/>
+                    </LinearLayout>
+                    <View style="@style/DetailDivider"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowClaimPhone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true">
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon.Green" android:src="@drawable/ic_phone"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="PHONE"/>
+                            <TextView android:id="@+id/tvClaimPhone" style="@style/DetailValue"/>
+                        </LinearLayout>
+                        <ImageView android:layout_width="20dp" android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right" android:tint="@color/text_secondary"
+                            android:contentDescription="@null"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- PROOF OF OWNERSHIP -->
+            <LinearLayout style="@style/DetailCard">
+                <TextView style="@style/DetailSection" android:text="PROOF OF OWNERSHIP"/>
+
+                <LinearLayout style="@style/DetailRow">
+                    <ImageView style="@style/DetailIcon" android:src="@drawable/ic_description"/>
+                    <LinearLayout style="@style/DetailTextCol">
+                        <TextView style="@style/DetailLabel" android:text="DESCRIPTION"/>
+                        <TextView android:id="@+id/tvProof" style="@style/DetailValue"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/proofPhotoWrap"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="10dp"
+                    android:visibility="gone">
+                    <View style="@style/DetailDivider" android:layout_marginStart="0dp"/>
+                    <TextView style="@style/DetailLabel" android:text="PROOF PHOTO"
+                        android:layout_marginTop="12dp" android:layout_marginBottom="8dp"/>
+                    <ImageView
+                        android:id="@+id/ivProof"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:scaleType="centerCrop"
+                        android:background="@color/teal_pale"
+                        android:contentDescription="Proof photo"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- REVIEW -->
+            <LinearLayout style="@style/DetailCard">
+                <TextView style="@style/DetailSection" android:text="REVIEW"/>
+
+                <LinearLayout style="@style/DetailRow">
+                    <ImageView style="@style/DetailIcon" android:src="@drawable/ic_check_circle"/>
+                    <LinearLayout style="@style/DetailTextCol">
+                        <TextView style="@style/DetailLabel" android:text="STATUS"/>
+                        <TextView android:id="@+id/tvClaimStatus" style="@style/DetailValue"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowReviewer"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone">
+                    <View style="@style/DetailDivider"/>
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon" android:src="@drawable/ic_person"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="REVIEWED BY"/>
+                            <TextView android:id="@+id/tvReviewer" style="@style/DetailValue"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowDecisionDate"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone">
+                    <View style="@style/DetailDivider"/>
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon" android:src="@drawable/ic_calendar"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="DECISION DATE"/>
+                            <TextView android:id="@+id/tvDecisionDate" style="@style/DetailValue"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowFeedback"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone">
+                    <View style="@style/DetailDivider"/>
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon.Red" android:src="@drawable/ic_description"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="REASON FOR REJECTION"/>
+                            <TextView android:id="@+id/tvFeedback" style="@style/DetailValue"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- HANDOVER (only after pickup) -->
+            <LinearLayout
+                android:id="@+id/cardHandover"
+                style="@style/DetailCard"
+                android:visibility="gone">
+                <TextView style="@style/DetailSection" android:text="HANDOVER"/>
+
+                <LinearLayout style="@style/DetailRow">
+                    <ImageView style="@style/DetailIcon.Green" android:src="@drawable/ic_description"/>
+                    <LinearLayout style="@style/DetailTextCol">
+                        <TextView style="@style/DetailLabel" android:text="RECEIPT NO."/>
+                        <TextView android:id="@+id/tvReceipt" style="@style/DetailValue"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <View style="@style/DetailDivider"/>
+
+                <LinearLayout style="@style/DetailRow">
+                    <ImageView style="@style/DetailIcon" android:src="@drawable/ic_calendar"/>
+                    <LinearLayout style="@style/DetailTextCol">
+                        <TextView style="@style/DetailLabel" android:text="PICKED UP"/>
+                        <TextView android:id="@+id/tvPickup" style="@style/DetailValue"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <View style="@style/DetailDivider"/>
+
+                <LinearLayout style="@style/DetailRow">
+                    <ImageView style="@style/DetailIcon" android:src="@drawable/ic_person"/>
+                    <LinearLayout style="@style/DetailTextCol">
+                        <TextView style="@style/DetailLabel" android:text="HANDED OVER BY"/>
+                        <TextView android:id="@+id/tvHandedBy" style="@style/DetailValue"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowHandoverNotes"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone">
+                    <View style="@style/DetailDivider"/>
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon" android:src="@drawable/ic_description"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="NOTES"/>
+                            <TextView android:id="@+id/tvHandoverNotes" style="@style/DetailValue"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ITEM & CUSTODY -->
+            <LinearLayout style="@style/DetailCard">
+                <TextView style="@style/DetailSection" android:text="ITEM &amp; CUSTODY"/>
+
+                <LinearLayout style="@style/DetailRow">
+                    <ImageView style="@style/DetailIcon" android:src="@drawable/ic_location"/>
+                    <LinearLayout style="@style/DetailTextCol">
+                        <TextView style="@style/DetailLabel" android:text="FOUND AT"/>
+                        <TextView android:id="@+id/tvItemLocation" style="@style/DetailValue"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <View style="@style/DetailDivider"/>
+
+                <LinearLayout style="@style/DetailRow">
+                    <ImageView style="@style/DetailIcon.Orange" android:src="@drawable/ic_inventory"/>
+                    <LinearLayout style="@style/DetailTextCol">
+                        <TextView style="@style/DetailLabel" android:text="IN CUSTODY OF"/>
+                        <TextView android:id="@+id/tvCustody" style="@style/DetailValue"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowCustodyNote"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone">
+                    <View style="@style/DetailDivider"/>
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon" android:src="@drawable/ic_description"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="PICK-UP NOTE"/>
+                            <TextView android:id="@+id/tvCustodyNote" style="@style/DetailValue"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowHolderEmail"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true">
+                    <View style="@style/DetailDivider"/>
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon.Blue" android:src="@drawable/ic_email"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="HOLDER EMAIL"/>
+                            <TextView android:id="@+id/tvHolderEmail" style="@style/DetailValue"/>
+                        </LinearLayout>
+                        <ImageView android:layout_width="20dp" android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right" android:tint="@color/text_secondary"
+                            android:contentDescription="@null"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowHolderPhone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true">
+                    <View style="@style/DetailDivider"/>
+                    <LinearLayout style="@style/DetailRow">
+                        <ImageView style="@style/DetailIcon.Green" android:src="@drawable/ic_phone"/>
+                        <LinearLayout style="@style/DetailTextCol">
+                            <TextView style="@style/DetailLabel" android:text="HOLDER PHONE"/>
+                            <TextView android:id="@+id/tvHolderPhone" style="@style/DetailValue"/>
+                        </LinearLayout>
+                        <ImageView android:layout_width="20dp" android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right" android:tint="@color/text_secondary"
+                            android:contentDescription="@null"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ACTIONS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:id="@+id/rowDecisionButtons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnReject"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1"
+                        android:text="Reject" android:textAllCaps="false"
+                        app:cornerRadius="14dp" app:strokeColor="@color/danger"
+                        android:textColor="@color/danger"/>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnApprove"
+                        android:layout_width="0dp" android:layout_height="54dp" android:layout_weight="1"
+                        android:layout_marginStart="10dp"
+                        android:text="Approve" android:textAllCaps="false"
+                        app:cornerRadius="14dp" app:backgroundTint="@color/teal_dark"/>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnConfirmHandover"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:text="Confirm handover"
+                    android:textAllCaps="false"
+                    app:cornerRadius="14dp"
+                    app:backgroundTint="@color/teal_dark"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPrintReceipt"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:text="View &amp; print receipt"
+                    android:textAllCaps="false"
+                    app:cornerRadius="14dp"
+                    app:backgroundTint="@color/teal_dark"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnWithdraw"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:text="Withdraw claim"
+                    android:textAllCaps="false"
+                    android:textColor="@color/danger"
+                    app:cornerRadius="14dp"
+                    app:strokeColor="@color/danger"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBack"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:text="Back"
+                    android:textAllCaps="false"
+                    app:cornerRadius="14dp"
+                    app:strokeColor="@color/teal_dark"
+                    android:textColor="@color/teal_dark"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

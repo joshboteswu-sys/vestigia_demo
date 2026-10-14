@@ -22,7 +22,8 @@
             android:src="@android:drawable/ic_menu_myplaces"
             app:tint="@color/teal_dark"
             android:padding="12dp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@null"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,6 +59,7 @@
             <include android:id="@+id/rowLostItems" layout="@layout/item_drawer_row"/>
             <include android:id="@+id/rowAccount" layout="@layout/item_drawer_row"/>
             <include android:id="@+id/rowMyItems" layout="@layout/item_drawer_row"/>
+            <include android:id="@+id/rowHandovers" layout="@layout/item_drawer_row"/>
             <include android:id="@+id/rowChangePassword" layout="@layout/item_drawer_row"/>
             <include android:id="@+id/rowAdminPanel" layout="@layout/item_drawer_row"/>
             <include android:id="@+id/rowAboutUs" layout="@layout/item_drawer_row"/>

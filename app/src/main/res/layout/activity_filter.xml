@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <include layout="@layout/view_form_topbar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView style="@style/RegSection" android:text="FILTER OPTIONS"/>
+
+            <LinearLayout style="@style/RegCard">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_search" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Keywords"/>
+                    <EditText android:id="@+id/etKeywords" style="@style/RegInput"
+                        android:hint="Type to search posts…"
+                        android:inputType="text"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout style="@style/RegCard">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_tag" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Category"/>
+                    <EditText android:id="@+id/etCategory" style="@style/RegInput"
+                        android:hint="Any category"
+                        android:inputType="textCapWords"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout style="@style/RegCard">
+                <ImageView style="@style/RegIconTile" android:src="@drawable/ic_inventory" android:contentDescription="@null"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView style="@style/RegLabel" android:text="Show"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="6dp">
+                        <TextView
+                            android:id="@+id/chipAll"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="All" android:textSize="13sp"
+                            android:paddingHorizontal="16dp" android:paddingVertical="7dp"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView
+                            android:id="@+id/chipFound"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Found" android:textSize="13sp"
+                            android:paddingHorizontal="16dp" android:paddingVertical="7dp"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView
+                            android:id="@+id/chipLost"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Lost" android:textSize="13sp"
+                            android:paddingHorizontal="16dp" android:paddingVertical="7dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom bar: Reset + Apply -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/surface"
+        android:elevation="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReset"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:text="Reset"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/teal_dark"
+            app:cornerRadius="16dp"
+            app:strokeColor="@color/teal_dark"
+            app:strokeWidth="2dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApply"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1.4"
+            android:text="Apply Filters"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_check_circle"
+            app:iconGravity="textStart"
+            app:iconTint="@color/surface"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/teal_dark"/>
+    </LinearLayout>
+
+</LinearLayout>

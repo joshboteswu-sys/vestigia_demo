@@ -28,14 +28,14 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-// Matches the Figma "Submit proof of ownership" screen.
-// Launched from ItemDetailActivity with item_id, item_name, location, date_found extras.
+// Launched from ItemDetailActivity with item_id, item_name, location, date_found extras
 public class ClaimItemActivity extends BaseProtectedActivity {
 
-    private TextView tvItemName, tvItemMeta, tvError;
+    private TextView tvTopTitle, tvItemName, tvItemMeta, tvError;
     private EditText etProofDescription;
-    private ImageView ivProofPhoto;
-    private Button btnBack, btnSubmit, btnSelectPhoto;
+    private ImageView ivBack, ivProofPhoto;
+    private View photoSlot, photoPlaceholder;
+    private Button btnSubmit;
     private ProgressBar progressBar;
 
     private int itemId;
@@ -47,33 +47,35 @@ public class ClaimItemActivity extends BaseProtectedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_claim_item);
 
+        ivBack = findViewById(R.id.ivBack);
+        tvTopTitle = findViewById(R.id.tvTopTitle);
         tvItemName = findViewById(R.id.tvItemName);
         tvItemMeta = findViewById(R.id.tvItemMeta);
-        tvError = findViewById(R.id.tvError);
         etProofDescription = findViewById(R.id.etProofDescription);
+        photoSlot = findViewById(R.id.photoSlot);
+        photoPlaceholder = findViewById(R.id.photoPlaceholder);
         ivProofPhoto = findViewById(R.id.ivProofPhoto);
-        btnBack = findViewById(R.id.btnBack);
-        btnSubmit = findViewById(R.id.btnSubmit);
-        btnSelectPhoto = findViewById(R.id.btnSelectPhoto);
+        tvError = findViewById(R.id.tvError);
         progressBar = findViewById(R.id.progressBar);
+        btnSubmit = findViewById(R.id.btnSubmit);
+
+        tvTopTitle.setText("Claim item");
 
         itemId = getIntent().getIntExtra("item_id", -1);
         tvItemName.setText(getIntent().getStringExtra("item_name"));
-        String location = getIntent().getStringExtra("location");
-        String dateFound = getIntent().getStringExtra("date_found");
-        tvItemMeta.setText(location + "  •  Found " + dateFound);
+        tvItemMeta.setText(getIntent().getStringExtra("location") + "  •  Found " + getIntent().getStringExtra("date_found"));
 
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
                 selectedImageUri = uri;
+                photoPlaceholder.setVisibility(View.GONE);
+                ivProofPhoto.setVisibility(View.VISIBLE);
                 Glide.with(this).load(uri).centerCrop().into(ivProofPhoto);
             }
         });
 
-        btnSelectPhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
-        ivProofPhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
-
-        btnBack.setOnClickListener(v -> finish());
+        photoSlot.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        ivBack.setOnClickListener(v -> finish());
         btnSubmit.setOnClickListener(v -> submitClaim());
     }
 
@@ -90,40 +92,50 @@ public class ClaimItemActivity extends BaseProtectedActivity {
         params.put("item_id", String.valueOf(itemId));
         params.put("proof_description", proof);
 
-        VolleyMultipartRequest request = new VolleyMultipartRequest(
-                ApiConfig.CLAIMS_CREATE, sessionManager.getToken(), params,
-                response -> {
-                    setLoading(false);
-                    if (response.optBoolean("success", false)) {
-                        Toast.makeText(this, response.optString("message", "Claim submitted."), Toast.LENGTH_LONG).show();
-                        setResult(RESULT_OK);
-                        finish();
-                    } else {
-                        showError(response.optString("message", "Could not submit claim."));
-                    }
-                },
-                error -> {
-                    setLoading(false);
-                    showError("Could not reach the server. Check your connection.");
+        // Heavy image decoding stays off the main thread
+        new Thread(() -> {
+            byte[] imageBytes = null;
+            if (selectedImageUri != null) {
+                try {
+                    imageBytes = readBytesFromUri(selectedImageUri);
+                } catch (Exception e) {
+                    runOnUiThread(() -> Toast.makeText(this,
+                            "Could not read selected photo, submitting without it.", Toast.LENGTH_SHORT).show());
                 }
-        );
-
-        if (selectedImageUri != null) {
-            try {
-                byte[] bytes = readBytesFromUri(selectedImageUri);
-                request.setFile("proof_photo", bytes, "proof.jpg", "image/jpeg");
-            } catch (Exception e) {
-                Toast.makeText(this, "Could not read selected photo, submitting without it.", Toast.LENGTH_SHORT).show();
             }
-        }
+            byte[] finalImageBytes = imageBytes;
 
-        VolleySingleton.getInstance(this).addToRequestQueue(request);
+            runOnUiThread(() -> {
+                VolleyMultipartRequest request = new VolleyMultipartRequest(
+                        ApiConfig.CLAIMS_CREATE, sessionManager.getToken(), params,
+                        response -> {
+                            setLoading(false);
+                            if (response.optBoolean("success", false)) {
+                                Toast.makeText(this, response.optString("message", "Claim submitted."), Toast.LENGTH_LONG).show();
+                                setResult(RESULT_OK);
+                                finish();
+                            } else {
+                                showError(response.optString("message", "Could not submit claim."));
+                            }
+                        },
+                        error -> {
+                            setLoading(false);
+                            showError("Could not reach the server. Check your connection.");
+                        }
+                );
+                if (finalImageBytes != null) {
+                    request.setFile("proof_photo", finalImageBytes, "proof.jpg", "image/jpeg");
+                }
+                VolleySingleton.getInstance(this).addToRequestQueue(request);
+            });
+        }).start();
     }
 
     private byte[] readBytesFromUri(Uri uri) throws Exception {
         InputStream inputStream = getContentResolver().openInputStream(uri);
         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
         if (inputStream != null) inputStream.close();
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
         return baos.toByteArray();
