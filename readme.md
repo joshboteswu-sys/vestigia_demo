@@ -1,5 +1,5 @@
 
-                    VESTIGIA - Lost and Found Management System
+VESTIGIA - Lost and Found Management System
 
 
 Overview
