@@ -1,22 +1,18 @@
+# VESTIGIA - Lost and Found Management System
 
-VESTIGIA - Lost and Found Management System
-
-
-Overview
+## Overview
 --------
 Vestigia ("Tracing what's missing") is a lost and found management system 
 designed to streamline reporting, claiming, and handing over lost items across 
 campus.
 
-
-Team Members
+## Team Members
 ------------
 * Josh Francis Bote (joshboteswu@phinmaed.com)
 * Christhan Jophet Kaquilala Gutang (chka.gutang.swu@phinmaed.com)
 * Kharl Adam Latigo (labo.kharladam.swu@phinmaed.com)
 
-
-Technology Stack
+## Technology Stack
 ----------------
 * Mobile App (Client) : Android SDK, Java, Volley HTTP library
 * API Backend         : PHP 8.3
@@ -25,8 +21,7 @@ Technology Stack
 * Hosting Platform    : Wasmer Edge (wasmer.io)
 * Version Control     : Git / GitHub (master branch)
 
-
-Setup & Installation Guide
+## Setup & Installation Guide
 ---------------------------
 
 1. Database Setup:
@@ -58,11 +53,9 @@ Setup & Installation Guide
    - Ensure your API endpoint URL in the Volley request config points to your deployed backend domain or local server IP.
    - Build and run the application on an Android device or emulator.
 
-
-Testing & API Documentation
+## Testing & API Documentation
 ---------------------------
 For API testing, endpoint samples, and request payload collections, refer to 
 the Postman guide located at:
 
 requirements/README.txt
-==============================================================================
