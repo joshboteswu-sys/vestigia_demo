@@ -1,6 +1,7 @@
 <?php
 require_once "db.php";
 require_once "auth_helper.php";
+require_once "upload_helper.php";
 
 $pdo = getDbConnection();
 $session = requireAuth($pdo);
@@ -18,27 +19,7 @@ if ($itemName === '' || $location === '' || $dateLost === '') {
     exit;
 }
 
-$imagePath = null;
-if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-    $uploadsDir = __DIR__ . '/uploads';
-    if (!is_dir($uploadsDir)) {
-        mkdir($uploadsDir, 0777, true);
-    }
-    $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-    $allowed = ['jpg', 'jpeg', 'png', 'webp'];
-    if (!in_array($ext, $allowed)) {
-        http_response_code(400);
-        echo json_encode(["success" => false, "message" => "Only JPG, PNG, or WEBP images are allowed."]);
-        exit;
-    }
-    $filename = uniqid('lost_', true) . '.' . $ext;
-    if (!move_uploaded_file($_FILES['image']['tmp_name'], $uploadsDir . '/' . $filename)) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Failed to save uploaded image."]);
-        exit;
-    }
-    $imagePath = 'uploads/' . $filename;
-}
+$imagePath = handleImageUpload('image', 'lost_');
 
 try {
     // Status vocabulary is now 'Active' / 'Claimed' / 'Returned' / 'Disposed'
@@ -61,9 +42,7 @@ try {
     echo json_encode(["success" => true, "message" => "Lost report submitted.", "item_id" => $newId]);
 
 } catch (PDOException $e) {
-    // Catch any DB-level failure (constraint violation, etc.) and return
-    // clean JSON instead of letting PHP dump an HTML error page, which is
-    // what was causing the app to see this as a network/parse failure.
+    error_log("Vestigia lost_create failed: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Could not save lost report: " . $e->getMessage()]);
+    echo json_encode(["success" => false, "message" => "Could not save your lost report right now. Please try again."]);
 }

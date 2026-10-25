@@ -1,7 +1,7 @@
 package com.vestigia.app.network;
 
 public class ApiConfig {
-    public static final String BASE_URL = "http://192.168.1.8/vestigia-api/php-api/";
+    public static final String BASE_URL = "http://192.168.1.200/vestigia-api/php-api/";
 
     public static final String LOGIN = BASE_URL + "login.php";
     public static final String REGISTER = BASE_URL + "register.php";

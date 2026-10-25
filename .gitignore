@@ -1,6 +1,11 @@
 *.iml
+*.log
+hs_err_pid*.log
+replay_pid*.log
 .gradle
+/.gradle/
 /local.properties
+/.idea/
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -9,7 +14,14 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 /build
+/app/build/
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+vestigia-api/php-api/uploads/*
+!vestigia-api/php-api/uploads/.htaccess
+'@ | Set-Content -Encoding UTF8 .gitignore
+build/
+local.properties
+'@ | Set-Content -Encoding UTF8 .gitignore

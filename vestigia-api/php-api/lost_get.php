@@ -3,7 +3,7 @@ require_once "db.php";
 require_once "auth_helper.php";
 
 $pdo = getDbConnection();
-requireAuth($pdo);
+$session = requireAuth($pdo);
 
 $id = $_GET["id"] ?? null;
 if (!$id) {
@@ -12,7 +12,8 @@ if (!$id) {
     exit;
 }
 
-$stmt = $pdo->prepare("SELECT li.*, u.first_name, u.last_name
+$stmt = $pdo->prepare("SELECT li.*, u.first_name, u.last_name,
+                              u.email AS reporter_email, u.contact_number AS reporter_phone
                         FROM lost_items li
                         LEFT JOIN users u ON u.id = li.reported_by
                         WHERE li.id = :id");
@@ -30,5 +31,13 @@ $host = $_SERVER['HTTP_HOST'];
 $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
 $baseUrl = $protocol . '://' . $host . $scriptDir . '/';
 $item['image_url'] = $item['image_path'] ? $baseUrl . $item['image_path'] : null;
+
+// The reporter's contact details are visible to admins only
+$contact = null;
+if ($session['is_admin'] && ($item['reporter_email'] || $item['reporter_phone'])) {
+    $contact = ["email" => $item['reporter_email'], "phone" => $item['reporter_phone']];
+}
+unset($item['reporter_email'], $item['reporter_phone']);
+$item['contact'] = $contact;
 
 echo json_encode(["success" => true, "item" => $item]);

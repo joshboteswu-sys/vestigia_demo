@@ -28,7 +28,10 @@ if ($filter === "today") {
 } elseif ($filter === "mine") {
     $sql .= " AND fi.reported_by = :mine_id";
     $params["mine_id"] = $session["user_id"];
+} elseif ($filter === "finder_held") {
+    $sql .= " AND fi.custody_holder = 'Finder' AND fi.status IN ('Active', 'Claimed')";
 }
+
 
 $sql .= " ORDER BY fi.date_found DESC, fi.id DESC";
 

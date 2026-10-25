@@ -1,17 +1,12 @@
 <?php
 require_once "db.php";
 require_once "auth_helper.php";
+require_once "notify_helper.php";
 
 $pdo = getDbConnection();
 $session = requireAuth($pdo);
 
-if (!$session['is_admin']) {
-    http_response_code(403);
-    echo json_encode(["success" => false, "message" => "Admins only."]);
-    exit;
-}
-
-$data = json_decode(file_get_contents("php://input"), true);
+$data = json_decode(file_get_contents("php://input"), true) ?? [];
 $claimId = $data['claim_id'] ?? null;
 $notes = trim($data['verification_notes'] ?? '');
 
@@ -21,12 +16,24 @@ if (!$claimId) {
     exit;
 }
 
-$claimStmt = $pdo->prepare("SELECT id, item_id FROM claims WHERE id = :id AND status = 'Approved'");
+$claimStmt = $pdo->prepare("SELECT c.id, c.item_id, c.claimed_by, fi.item_name, fi.custody_holder, fi.custodian_id, fi.reported_by
+                            FROM claims c
+                            JOIN found_items fi ON fi.id = c.item_id
+                            WHERE c.id = :id AND c.status = 'Approved'");
 $claimStmt->execute(["id" => $claimId]);
 $claim = $claimStmt->fetch(PDO::FETCH_ASSOC);
 if (!$claim) {
     http_response_code(404);
     echo json_encode(["success" => false, "message" => "An approved claim with this id was not found, or it already has a handover."]);
+    exit;
+}
+
+// Who may record the handover: any admin, or the finder who is holding the item
+$holderId = ($claim['custody_holder'] === 'Finder') ? ($claim['custodian_id'] ?: $claim['reported_by']) : null;
+$isCustodian = $holderId !== null && (int) $holderId === (int) $session['user_id'];
+if (!$session['is_admin'] && !$isCustodian) {
+    http_response_code(403);
+    echo json_encode(["success" => false, "message" => "Only an admin or the person holding the item can record the handover."]);
     exit;
 }
 
@@ -42,6 +49,7 @@ $receiptNo = "RCPT-" . strtoupper(bin2hex(random_bytes(4)));
 
 $pdo->beginTransaction();
 try {
+    // staff_id holds whoever physically handed the item over (admin or finder)
     $pdo->prepare("INSERT INTO handovers (claim_id, staff_id, receipt_no, verification_notes)
                     VALUES (:claim_id, :staff, :receipt, :notes)")
         ->execute([
@@ -63,6 +71,14 @@ try {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Could not record handover."]);
     exit;
+}
+
+try {
+    notifyUser($pdo, $claim['claimed_by'], 'handover_done', 'Item handed over',
+        "\"{$claim['item_name']}\" was handed over to you. Your receipt number is $receiptNo. Keep it for your records.",
+        $claim['item_id'], $claim['id']);
+} catch (Throwable $e) {
+    error_log("Vestigia: handover notification failed: " . $e->getMessage());
 }
 
 echo json_encode(["success" => true, "message" => "Handover recorded successfully.", "receipt_no" => $receiptNo]);

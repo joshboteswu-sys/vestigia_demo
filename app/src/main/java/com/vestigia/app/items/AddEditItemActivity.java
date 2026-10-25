@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -123,8 +124,10 @@ public class AddEditItemActivity extends BaseProtectedActivity {
                     Integer.parseInt(selectedDateIso.substring(5, 7)) - 1,
                     Integer.parseInt(selectedDateIso.substring(8, 10)));
         }
-        new DatePickerDialog(this, (view, year, month, day) -> setDate(year, month, day),
-                c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+        DatePickerDialog dialog = new DatePickerDialog(this, (view, year, month, day) -> setDate(year, month, day),
+                c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        dialog.show();
     }
 
     private void setDate(int year, int month0, int day) {
@@ -146,6 +149,11 @@ public class AddEditItemActivity extends BaseProtectedActivity {
                 || TextUtils.isEmpty(etLocation.getText().toString().trim())
                 || selectedDateIso.isEmpty()) {
             showError("Item name, location, and date found are required.");
+            return false;
+        }
+        String todayIso = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+        if (selectedDateIso.compareTo(todayIso) > 0) {
+            showError("Date found cannot be in the future.");
             return false;
         }
         showError(null);

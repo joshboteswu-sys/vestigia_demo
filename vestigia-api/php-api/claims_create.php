@@ -1,6 +1,8 @@
 <?php
 require_once "db.php";
 require_once "auth_helper.php";
+require_once "notify_helper.php";
+require_once "upload_helper.php";
 
 $pdo = getDbConnection();
 $session = requireAuth($pdo);
@@ -44,21 +46,7 @@ if ($dupCheck->fetch()) {
     exit;
 }
 
-$photoPath = null;
-if (isset($_FILES['proof_photo']) && $_FILES['proof_photo']['error'] === UPLOAD_ERR_OK) {
-    $uploadsDir = __DIR__ . '/uploads';
-    if (!is_dir($uploadsDir)) {
-        mkdir($uploadsDir, 0777, true);
-    }
-    $ext = strtolower(pathinfo($_FILES['proof_photo']['name'], PATHINFO_EXTENSION));
-    $allowed = ['jpg', 'jpeg', 'png', 'webp'];
-    if (in_array($ext, $allowed)) {
-        $filename = uniqid('claim_', true) . '.' . $ext;
-        if (move_uploaded_file($_FILES['proof_photo']['tmp_name'], $uploadsDir . '/' . $filename)) {
-            $photoPath = 'uploads/' . $filename;
-        }
-    }
-}
+$photoPath = handleImageUpload('proof_photo', 'claim_');
 
 $stmt = $pdo->prepare("INSERT INTO claims (item_id, claimed_by, proof_description, proof_photo_path, status)
                         VALUES (:item_id, :uid, :desc, :photo, 'Pending Verification') RETURNING id");
@@ -68,6 +56,35 @@ $stmt->execute([
     "desc"    => $proofDescription,
     "photo"   => $photoPath
 ]);
-$newId = $stmt->fetchColumn();
+  $newId = $stmt->fetchColumn();
 
-echo json_encode(["success" => true, "message" => "Claim submitted. An admin will review it soon.", "claim_id" => $newId]);
+  // ---- Notify whoever holds the item (and the admins who must review the claim) ----
+  try {
+      $item         = getItemCustody($pdo, $itemId);
+      $claimant     = getUserBasic($pdo, $session['user_id']);
+      $claimantName = $claimant ? fullName($claimant['first_name'], $claimant['last_name']) : 'Someone';
+      $itemName     = $item['item_name'] ?? 'an item';
+
+      if ($item && $item['custody_holder'] === 'Finder') {
+          // The finder still has the item: they should keep it safe until the claim is reviewed
+          if ($item['holder_user_id'] && (int) $item['holder_user_id'] !== (int) $session['user_id']) {
+              notifyUser($pdo, $item['holder_user_id'], 'claim_submitted', 'New claim on your found item',
+                  "$claimantName submitted a claim for \"$itemName\", which you are currently holding. "
+                  . "Please keep it safe until an administrator reviews the claim. You will be told the result.",
+                  $itemId, $newId);
+          }
+          notifyAdmins($pdo, 'claim_submitted', 'Claim awaiting review',
+              "$claimantName submitted a claim for \"$itemName\". The item is currently held by "
+              . custodyDescription($item, true) . ". Review it under Admin Panel > Review pending claims.",
+              $itemId, $newId, $session['user_id']);
+      } else {
+          notifyAdmins($pdo, 'claim_submitted', 'New claim on an item in the Admin Office',
+              "$claimantName submitted a claim for \"$itemName\", which is in the Admin Office. "
+              . "Review it under Admin Panel > Review pending claims.",
+              $itemId, $newId, $session['user_id']);
+      }
+  } catch (Throwable $e) {
+      error_log("Vestigia: claim notifications failed: " . $e->getMessage());
+  }
+
+  echo json_encode(["success" => true, "message" => "Claim submitted. The person holding the item and an admin have been notified.", "claim_id" => $newId]);
