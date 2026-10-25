@@ -1,19 +1,16 @@
 # VESTIGIA - Lost and Found Management System
 
 ## Overview
---------
 Vestigia ("Tracing what's missing") is a lost and found management system 
 designed to streamline reporting, claiming, and handing over lost items across 
 campus.
 
 ## Team Members
-------------
 * Josh Francis Bote (joshboteswu@phinmaed.com)
 * Christhan Jophet Kaquilala Gutang (chka.gutang.swu@phinmaed.com)
 * Kharl Adam Latigo (labo.kharladam.swu@phinmaed.com)
 
 ## Technology Stack
-----------------
 * Mobile App (Client) : Android SDK, Java, Volley HTTP library
 * API Backend         : PHP 8.3
 * Data Access         : PDO (PHP Data Objects)
@@ -22,8 +19,6 @@ campus.
 * Version Control     : Git / GitHub (master branch)
 
 ## Setup & Installation Guide
----------------------------
-
 1. Database Setup:
    - Ensure you have a running PostgreSQL 18.6 instance (locally or on Wasmer Edge).
    - Import the database schema and seed data from the provided SQL dump:
@@ -54,7 +49,6 @@ campus.
    - Build and run the application on an Android device or emulator.
 
 ## Testing & API Documentation
----------------------------
 For API testing, endpoint samples, and request payload collections, refer to 
 the Postman guide located at:
 
